@@ -1,0 +1,2 @@
+Factory Yard HDRI https://hdrihaven.com/hdri/?h=factory_yard from HDRIHaven hdrihaven.com/
+Kenney Prototype Textures https://kenney.nl/assets/prototype-textures from Kenney (ケニー)  https://www.kenney.nl/
