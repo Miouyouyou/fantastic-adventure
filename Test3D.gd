@@ -64,7 +64,12 @@ func map_import_entity_glb(id:String, json_def):
 	var components = json_def["components"]
 	for component in components:
 		if component["name"] == "gltf-model":
-			download(component["props"]["src"], id, "/tmp/" + id)
+			var filepath:String = "/tmp/" + id
+			var f = File.new()
+			if f.file_exists(filepath):
+				model_add_to_scene_wiht_collider_gltf(filepath)
+			else:
+				download(component["props"]["src"], id, filepath)
 			break
 
 func import_map(url):
@@ -114,6 +119,28 @@ func find_animator_in(model:Spatial):
 
 var exported:bool = false
 
+func model_imported_get_mesh(model):
+	if model is MeshInstance:
+		return model
+	else:
+		for child in model.get_children():
+			if model_imported_get_mesh(child) is MeshInstance:
+				return child
+			else:
+				return null
+
+func model_add_to_scene_with_collider(model:Spatial):
+	var cs:MeshInstance = model_imported_get_mesh(model)
+	if cs == null:
+		return
+	cs.create_trimesh_collision()
+	add_child(model)
+
+func model_add_to_scene_wiht_collider_gltf(filepath:String):
+	var model = gltf_importer.import_gltf_scene(filepath)
+	if model != null:
+		model_add_to_scene_with_collider(model)
+
 func _process(delta):
 	while last_pos != current_pos:
 		var current_model:Spatial = queued[last_pos]
@@ -135,9 +162,7 @@ func _process(delta):
 	for http_request in $Downloads.get_children():
 		if http_request.get_http_client_status() == HTTPClient.STATUS_DISCONNECTED:
 			print(http_request.get_download_file() + " : " + str(http_request.get_downloaded_bytes()))
-			var model = gltf_importer.import_gltf_scene(http_request.get_download_file())
-			if model != null:
-				add_child(model)
+			model_add_to_scene_wiht_collider_gltf(http_request.get_download_file())
 			$Downloads.remove_child(http_request)
 
 func _ready():
