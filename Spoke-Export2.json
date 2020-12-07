@@ -1,0 +1,785 @@
+{
+    "version": 5,
+    "root": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+    "metadata": {
+        "name": "Hello WebXR Main Hall",
+        "previewCameraTransform": {
+            "elements": [
+                -0.6239334288895413,
+                -1.1102230246251605e-16,
+                -0.7814774957183009,
+                0,
+                -0.12555897862059912,
+                0.9870083923953374,
+                0.10024657714117755,
+                0,
+                0.7713248467422337,
+                0.16066870678754563,
+                -0.61582753061012,
+                0,
+                6.859015698726067,
+                2.4314150080531807,
+                -3.5342709571773905,
+                1
+            ]
+        }
+    },
+    "entities": {
+        "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC": {
+            "name": "Hello WebXR Main Hall",
+            "components": [
+                {
+                    "name": "fog",
+                    "props": {
+                        "type": "disabled",
+                        "color": "#ffffff",
+                        "near": 0.0025,
+                        "far": 1000,
+                        "density": 0.0025
+                    }
+                },
+                {
+                    "name": "background",
+                    "props": {
+                        "color": "#aaaaaa"
+                    }
+                },
+                {
+                    "name": "audio-settings",
+                    "props": {
+                        "overrideAudioSettings": false,
+                        "avatarDistanceModel": "inverse",
+                        "avatarRolloffFactor": 2,
+                        "avatarRefDistance": 1,
+                        "avatarMaxDistance": 10000,
+                        "mediaVolume": 0.5,
+                        "mediaDistanceModel": "inverse",
+                        "mediaRolloffFactor": 1,
+                        "mediaRefDistance": 1,
+                        "mediaMaxDistance": 10000,
+                        "mediaConeInnerAngle": 360,
+                        "mediaConeOuterAngle": 0,
+                        "mediaConeOuterGain": 0
+                    }
+                }
+            ]
+        },
+        "D8061EA5-F0C4-4452-ADFE-B179E2F20CB1": {
+            "name": "Directional Light",
+            "components": [
+                {
+                    "name": "transform",
+                    "props": {
+                        "position": {
+                            "x": 5,
+                            "y": 3,
+                            "z": 0
+                        },
+                        "rotation": {
+                            "x": 2.01606052810214,
+                            "y": 0.05348476317175912,
+                            "z": 0.11155543936089898
+                        },
+                        "scale": {
+                            "x": 1.0000000000000586,
+                            "y": 1.0000000000000058,
+                            "z": 1.000000000000014
+                        }
+                    }
+                },
+                {
+                    "name": "visible",
+                    "props": {
+                        "visible": true
+                    }
+                },
+                {
+                    "name": "directional-light",
+                    "props": {
+                        "color": "#ffffff",
+                        "intensity": 3,
+                        "castShadow": true,
+                        "shadowMapResolution": [
+                            1024,
+                            1024
+                        ],
+                        "shadowBias": -0.000030000000000000004,
+                        "shadowRadius": 1
+                    }
+                }
+            ],
+            "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+            "index": 0
+        },
+        "633CD01A-BC2A-4584-99E2-2A3CFE2C8AD9": {
+            "name": "Spawn Point",
+            "components": [
+                {
+                    "name": "transform",
+                    "props": {
+                        "position": {
+                            "x": 1.9303135919794319,
+                            "y": 0,
+                            "z": 2.098551463335753
+                        },
+                        "rotation": {
+                            "x": 3.141592653589793,
+                            "y": -4.440892098500625e-16,
+                            "z": 3.141592653589793
+                        },
+                        "scale": {
+                            "x": 1.0000000000000002,
+                            "y": 1,
+                            "z": 1.0000000000000002
+                        }
+                    }
+                },
+                {
+                    "name": "visible",
+                    "props": {
+                        "visible": true
+                    }
+                },
+                {
+                    "name": "spawn-point",
+                    "props": {}
+                }
+            ],
+            "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+            "index": 1
+        },
+        "2D490729-384D-49AF-A755-9D6F70D56325": {
+            "name": "Floor Plan",
+            "components": [
+                {
+                    "name": "transform",
+                    "props": {
+                        "position": {
+                            "x": 0,
+                            "y": 0.005,
+                            "z": 0
+                        },
+                        "rotation": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 1,
+                            "y": 1,
+                            "z": 1
+                        }
+                    }
+                },
+                {
+                    "name": "visible",
+                    "props": {
+                        "visible": true
+                    }
+                },
+                {
+                    "name": "floor-plan",
+                    "props": {
+                        "autoCellSize": false,
+                        "cellSize": 0.10000000000000009,
+                        "cellHeight": 0.10000000000000009,
+                        "agentHeight": 1.7,
+                        "agentRadius": 0.0009999999999998899,
+                        "agentMaxClimb": 0.5,
+                        "agentMaxSlope": 60,
+                        "regionMinSize": 4,
+                        "maxTriangles": 1000,
+                        "forceTrimesh": true
+                    }
+                }
+            ],
+            "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+            "index": 2
+        },
+        "1948A3E1-CD34-4CD7-ADA6-A4C42B10F815": {
+            "name": "Spawn Point",
+            "components": [
+                {
+                    "name": "transform",
+                    "props": {
+                        "position": {
+                            "x": 3,
+                            "y": 0,
+                            "z": -3.6577999219298363
+                        },
+                        "rotation": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 1,
+                            "y": 1,
+                            "z": 1
+                        }
+                    }
+                },
+                {
+                    "name": "visible",
+                    "props": {
+                        "visible": true
+                    }
+                },
+                {
+                    "name": "spawn-point",
+                    "props": {}
+                }
+            ],
+            "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+            "index": 3
+        },
+        "3BDC638D-8C9E-46D7-93C3-92E9F41C0FDE": {
+            "name": "Spawn Point",
+            "components": [
+                {
+                    "name": "transform",
+                    "props": {
+                        "position": {
+                            "x": -2.1115813948672955,
+                            "y": 0,
+                            "z": 4.6115813948672955
+                        },
+                        "rotation": {
+                            "x": -3.141592653589793,
+                            "y": 0.7853981633974484,
+                            "z": -3.141592653589793
+                        },
+                        "scale": {
+                            "x": 0.9999999999999998,
+                            "y": 1,
+                            "z": 0.9999999999999998
+                        }
+                    }
+                },
+                {
+                    "name": "visible",
+                    "props": {
+                        "visible": true
+                    }
+                },
+                {
+                    "name": "spawn-point",
+                    "props": {}
+                }
+            ],
+            "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+            "index": 4
+        },
+        "D2C0D1E6-A136-4844-94D1-8306CD776873": {
+            "name": "Spawn Point 1",
+            "components": [
+                {
+                    "name": "transform",
+                    "props": {
+                        "position": {
+                            "x": -3.6577999219298363,
+                            "y": 0,
+                            "z": 1.5
+                        },
+                        "rotation": {
+                            "x": 0,
+                            "y": 1.5707963267948966,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 1,
+                            "y": 1,
+                            "z": 1
+                        }
+                    }
+                },
+                {
+                    "name": "visible",
+                    "props": {
+                        "visible": true
+                    }
+                },
+                {
+                    "name": "spawn-point",
+                    "props": {}
+                }
+            ],
+            "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+            "index": 5
+        },
+        "996C9E89-FC8D-4527-81F9-5DA93373DB75": {
+            "name": "Spawn Point 2",
+            "components": [
+                {
+                    "name": "transform",
+                    "props": {
+                        "position": {
+                            "x": 4,
+                            "y": 0,
+                            "z": 4.157799921929836
+                        },
+                        "rotation": {
+                            "x": -3.141592653589793,
+                            "y": -2.83276944882399e-16,
+                            "z": -3.141592653589793
+                        },
+                        "scale": {
+                            "x": 1,
+                            "y": 1,
+                            "z": 1
+                        }
+                    }
+                },
+                {
+                    "name": "visible",
+                    "props": {
+                        "visible": true
+                    }
+                },
+                {
+                    "name": "spawn-point",
+                    "props": {}
+                }
+            ],
+            "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+            "index": 6
+        },
+        "07CE6170-8B11-4F1C-A493-50B057F05CD1": {
+            "name": "Spawn Point 3",
+            "components": [
+                {
+                    "name": "transform",
+                    "props": {
+                        "position": {
+                            "x": 6.157799921929836,
+                            "y": 0,
+                            "z": -0.9999999999999997
+                        },
+                        "rotation": {
+                            "x": 0,
+                            "y": -1.5707963267948966,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 1,
+                            "y": 1,
+                            "z": 1
+                        }
+                    }
+                },
+                {
+                    "name": "visible",
+                    "props": {
+                        "visible": true
+                    }
+                },
+                {
+                    "name": "spawn-point",
+                    "props": {}
+                }
+            ],
+            "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+            "index": 7
+        },
+        "25AE582C-D7D6-4ABD-81EA-0D8019D02855": {
+            "name": "floorplan.glb",
+            "components": [
+                {
+                    "name": "transform",
+                    "props": {
+                        "position": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "rotation": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 1,
+                            "y": 1,
+                            "z": 1
+                        }
+                    }
+                },
+                {
+                    "name": "visible",
+                    "props": {
+                        "visible": false
+                    }
+                },
+                {
+                    "name": "gltf-model",
+                    "props": {
+                        "src": "https://uploads-prod.reticulum.io/files/d867a114-854d-4e6a-9123-128a9d574016.glb",
+                        "attribution": null
+                    }
+                },
+                {
+                    "name": "shadow",
+                    "props": {
+                        "cast": false,
+                        "receive": false
+                    }
+                },
+                {
+                    "name": "walkable",
+                    "props": {}
+                },
+                {
+                    "name": "combine",
+                    "props": {}
+                }
+            ],
+            "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+            "index": 8
+        },
+        "7AFDA559-6780-4B99-9903-9AFA9BB7B424": {
+            "name": "tree.glb",
+            "components": [
+                {
+                    "name": "transform",
+                    "props": {
+                        "position": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "rotation": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 1,
+                            "y": 1,
+                            "z": 1
+                        }
+                    }
+                },
+                {
+                    "name": "visible",
+                    "props": {
+                        "visible": true
+                    }
+                },
+                {
+                    "name": "gltf-model",
+                    "props": {
+                        "src": "https://uploads-prod.reticulum.io/files/eeb68eb6-155f-4499-b4b1-7ab74ee5d040.glb",
+                        "attribution": null
+                    }
+                },
+                {
+                    "name": "shadow",
+                    "props": {
+                        "cast": false,
+                        "receive": false
+                    }
+                },
+                {
+                    "name": "combine",
+                    "props": {}
+                }
+            ],
+            "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+            "index": 9
+        },
+        "76A82F47-3917-4CFB-A54C-15F92BF51BA2": {
+            "name": "hall.glb",
+            "components": [
+                {
+                    "name": "transform",
+                    "props": {
+                        "position": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "rotation": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 1,
+                            "y": 1,
+                            "z": 1
+                        }
+                    }
+                },
+                {
+                    "name": "visible",
+                    "props": {
+                        "visible": true
+                    }
+                },
+                {
+                    "name": "gltf-model",
+                    "props": {
+                        "src": "https://uploads-prod.reticulum.io/files/842a8293-fe2d-4a6a-a921-e582219cb418.glb",
+                        "attribution": null
+                    }
+                },
+                {
+                    "name": "shadow",
+                    "props": {
+                        "cast": true,
+                        "receive": false
+                    }
+                },
+                {
+                    "name": "collidable",
+                    "props": {}
+                },
+                {
+                    "name": "combine",
+                    "props": {}
+                }
+            ],
+            "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+            "index": 10
+        },
+        "0FB4AEE0-86B4-4111-A656-762BC5C71A5E": {
+            "name": "Skybox",
+            "components": [
+                {
+                    "name": "transform",
+                    "props": {
+                        "position": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "rotation": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 1,
+                            "y": 1,
+                            "z": 1
+                        }
+                    }
+                },
+                {
+                    "name": "visible",
+                    "props": {
+                        "visible": true
+                    }
+                },
+                {
+                    "name": "skybox",
+                    "props": {
+                        "turbidity": 10,
+                        "rayleigh": 2,
+                        "luminance": 1,
+                        "mieCoefficient": 0,
+                        "mieDirectionalG": 0.65,
+                        "inclination": -1.1955505376161157,
+                        "azimuth": 0.7708333333333334,
+                        "distance": 8000
+                    }
+                }
+            ],
+            "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+            "index": 11
+        },
+        "B191A021-BF12-41F1-96C3-81B87FD94A27": {
+            "name": "Media Frame",
+            "components": [
+                {
+                    "name": "transform",
+                    "props": {8
+                        "position": {
+                            "x": 2.8000000000000003,
+                            "y": 1.4000000000000001,
+                            "z": 0.75
+                        },
+                        "rotation": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 1,
+                            "y": 1,
+                            "z": 1
+                        }
+                    }
+                },
+                {
+                    "name": "visible",
+                    "props": {
+                        "visible": true
+                    }
+                },
+                {
+                    "name": "media-frame",
+                    "props": {
+                        "mediaType": "model"
+                    }
+                }
+            ],
+            "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+            "index": 12
+        },
+        "C848FDC5-F009-4FE5-9F65-4172BA6F48B4": {
+            "name": "Media Frame",
+            "components": [
+                {
+                    "name": "transform",
+                    "props": {
+                        "position": {
+                            "x": 0.6,
+                            "y": 2.2,
+                            "z": 6.7
+                        },
+                        "rotation": {
+                            "x": -3.141592653589793,
+                            "y": 2.83276944882399e-16,
+                            "z": -3.141592653589793
+                        },
+                        "scale": {
+                            "x": 6.111634504696469,
+                            "y": 3.4377944088917634,
+                            "z": 0.5
+                        }
+                    }
+                },
+                {
+                    "name": "visible",
+                    "props": {
+                        "visible": true
+                    }
+                },
+                {
+                    "name": "media-frame",
+                    "props": {
+                        "mediaType": "all-2d"
+                    }
+                }
+            ],
+            "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+            "index": 13
+        },
+        "B72E25D2-09B6-49EB-8CB3-17759D9D2E91": {
+            "name": "Media Frame 1",
+            "components": [
+                {
+                    "name": "transform",
+                    "props": {
+                        "position": {
+                            "x": 8.300000000000004,
+                            "y": 2.2,
+                            "z": -1.7999999999999985
+                        },
+                        "rotation": {
+                            "x": 0,
+                            "y": -1.5707963267948966,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 6.111634504696469,
+                            "y": 3.4377944088917634,
+                            "z": 0.5
+                        }
+                    }
+                },
+                {
+                    "name": "visible",
+                    "props": {
+                        "visible": true
+                    }
+                },
+                {
+                    "name": "media-frame",
+                    "props": {
+                        "mediaType": "all-2d"
+                    }
+                }
+            ],
+            "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+            "index": 14
+        },
+        "81FB0189-4D56-4B45-B90B-1D7297992E45": {
+            "name": "Media Frame 2",
+            "components": [
+                {
+                    "name": "transform",
+                    "props": {
+                        "position": {
+                            "x": 4.200000000000001,
+                            "y": 2.2,
+                            "z": -7.2
+                        },
+                        "rotation": {
+                            "x": 0,
+                            "y": -5.053215498074303e-16,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 6.111634504696469,
+                            "y": 3.4377944088917634,
+                            "z": 0.5
+                        }
+                    }
+                },
+                {
+                    "name": "visible",
+                    "props": {
+                        "visible": true
+                    }
+                },
+                {
+                    "name": "media-frame",
+                    "props": {
+                        "mediaType": "all-2d"
+                    }
+                }
+            ],
+            "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+            "index": 15
+        },
+        "F05F160C-7704-4682-A63E-A78053D570BF": {
+            "name": "Scene Preview Camera",
+            "components": [
+                {
+                    "name": "transform",
+                    "props": {
+                        "position": {
+                            "x": 4.79850190177852,
+                            "y": 1.2424821559096566,
+                            "z": -2.671994122080543
+                        },
+                        "rotation": {
+                            "x": 2.62867543720271,
+                            "y": 0.9298347488707954,
+                            "z": -2.717564583630221
+                        },
+                        "scale": {
+                            "x": 0.9999999999999999,
+                            "y": 0.9999999999999999,
+                            "z": 0.9999999999999999
+                        }
+                    }
+                },
+                {
+                    "name": "visible",
+                    "props": {
+                        "visible": true
+                    }
+                },
+                {
+                    "name": "scene-preview-camera",
+                    "props": {}
+                }
+            ],
+            "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+            "index": 16
+        }
+    }
+}
