@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://SpokeDownloader.gd" type="Script" id=1]
+
+[node name="Node" type="Spatial"]
+script = ExtResource( 1 )
+url = "https://uploads-prod.reticulum.io/files/5d48e4b6-f568-45ad-830f-5758f49d9620.json"
+json_filepath = "/tmp/map.json"
+
+[node name="MapObjectsDownload" type="Node" parent="."]

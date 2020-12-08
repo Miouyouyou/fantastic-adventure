@@ -120,6 +120,9 @@ func find_animator_in(model:Spatial):
 var exported:bool = false
 
 func model_imported_get_mesh(model):
+	var a = AudioServer.new()
+
+	
 	if model is MeshInstance:
 		return model
 	else:
@@ -159,11 +162,11 @@ func _process(delta):
 	#	var p = PackedSceneGLTF.new()
 	#	exported = (p.export_gltf($ToExport, "/tmp/meow.glb") == OK)
 	
-	for http_request in $Downloads.get_children():
-		if http_request.get_http_client_status() == HTTPClient.STATUS_DISCONNECTED:
-			print(http_request.get_download_file() + " : " + str(http_request.get_downloaded_bytes()))
-			model_add_to_scene_wiht_collider_gltf(http_request.get_download_file())
-			$Downloads.remove_child(http_request)
+	#for http_request in $Downloads.get_children():
+	#	if http_request.get_http_client_status() == HTTPClient.STATUS_DISCONNECTED:
+	#		print(http_request.get_download_file() + " : " + str(http_request.get_downloaded_bytes()))
+	#		model_add_to_scene_wiht_collider_gltf(http_request.get_download_file())
+	#		$Downloads.remove_child(http_request)
 
 func _ready():
 	robot_anim.play("Love")
@@ -176,7 +179,7 @@ func _ready():
 	#processing_thread.start(self, "import_in_background", ["/tmp/test.glb", queued])
 	#processing_thread = Thread.new()
 	#processing_thread.start(self, "import_in_background", ["/home/gamer/tmp/model/Fox.glb", queued])
-	import_map("")
+	#import_map("")
 	pass # Replace with function body.
 
 func _on_item_pressed(ID):
