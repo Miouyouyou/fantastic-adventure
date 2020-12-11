@@ -11,12 +11,16 @@ config_version=4
 [application]
 
 config/name="VRTribulations"
-run/main_scene="res://MapDownloader.tscn"
+run/main_scene="res://NetworkLobby.tscn"
 config/icon="res://icon.png"
+
+[autoload]
+
+Network="*res://Network/Network.gd"
 
 [gdnative]
 
-singletons=[ "res://addons/gltf/gltf_import.gdnlib" ]
+singletons=[  ]
 
 [input]
 

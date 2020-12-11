@@ -1,0 +1,107 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://SimpleUITheme.tres" type="Theme" id=1]
+[ext_resource path="res://RoomsList.tscn" type="PackedScene" id=2]
+[ext_resource path="res://NetworkLobby.gd" type="Script" id=3]
+
+[node name="ServerConnect" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 1 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.482353, 0.266667, 0.266667, 1 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 8.0
+custom_constants/separation = 32
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+margin_right = 1024.0
+margin_bottom = 19.0
+text = "Server"
+align = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
+margin_top = 51.0
+margin_right = 1024.0
+margin_bottom = 170.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/CenterContainer"]
+margin_left = 298.0
+margin_right = 725.0
+margin_bottom = 119.0
+custom_constants/separation = 32
+
+[node name="GridContainer" type="GridContainer" parent="VBoxContainer/CenterContainer/VBoxContainer"]
+margin_right = 427.0
+margin_bottom = 62.0
+columns = 2
+
+[node name="LabelName" type="Label" parent="VBoxContainer/CenterContainer/VBoxContainer/GridContainer"]
+margin_top = 5.0
+margin_right = 83.0
+margin_bottom = 24.0
+text = "Name"
+align = 2
+
+[node name="TextEditName" type="LineEdit" parent="VBoxContainer/CenterContainer/VBoxContainer/GridContainer"]
+margin_left = 87.0
+margin_right = 427.0
+margin_bottom = 29.0
+rect_min_size = Vector2( 340, 0 )
+text = "GrumpyHamster"
+max_length = 32
+placeholder_text = "Name of your room"
+
+[node name="LabelIP" type="Label" parent="VBoxContainer/CenterContainer/VBoxContainer/GridContainer"]
+margin_top = 38.0
+margin_right = 83.0
+margin_bottom = 57.0
+text = "IP Address"
+align = 2
+
+[node name="TextEditIP" type="LineEdit" parent="VBoxContainer/CenterContainer/VBoxContainer/GridContainer"]
+margin_left = 87.0
+margin_top = 33.0
+margin_right = 427.0
+margin_bottom = 62.0
+rect_min_size = Vector2( 340, 0 )
+text = "127.0.0.1"
+max_length = 32
+placeholder_text = "127.0.0.1"
+
+[node name="ButtonJoin" type="Button" parent="VBoxContainer/CenterContainer/VBoxContainer"]
+margin_top = 94.0
+margin_right = 427.0
+margin_bottom = 119.0
+text = "Join"
+
+[node name="ButtonHost" type="Button" parent="."]
+anchor_left = 0.016
+anchor_top = 0.899
+anchor_right = 0.161
+anchor_bottom = 0.958
+text = "Host"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RoomsList" parent="." instance=ExtResource( 2 )]
+
+[connection signal="pressed" from="VBoxContainer/CenterContainer/VBoxContainer/ButtonJoin" to="." method="_on_ButtonJoin_pressed"]
+[connection signal="pressed" from="ButtonHost" to="." method="_on_ButtonHost_pressed"]
