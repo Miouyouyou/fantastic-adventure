@@ -45,7 +45,8 @@ func _connected_to_server():
 func _we_are_the_server():
 	return get_tree().is_network_server()
 
-func _send_player_info(id):
+remote func _send_player_info(id):
+	print("RPC Called !")
 	if _we_are_the_server():
 		print( "[Server] " + str(id) + " has connected.")
 
