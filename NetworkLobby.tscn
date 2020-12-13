@@ -100,7 +100,10 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="RoomsList" parent="." instance=ExtResource( 2 )]
+[node name="RoomsList" parent="." groups=[
+"RoomsList",
+] instance=ExtResource( 2 )]
 
+[connection signal="text_changed" from="VBoxContainer/CenterContainer/VBoxContainer/GridContainer/TextEditName" to="." method="_on_TextEditName_text_changed"]
 [connection signal="pressed" from="VBoxContainer/CenterContainer/VBoxContainer/ButtonJoin" to="." method="_on_ButtonJoin_pressed"]
 [connection signal="pressed" from="VBoxContainer/CenterContainer/VBoxContainer/ButtonHost" to="." method="_on_ButtonHost_pressed"]

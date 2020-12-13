@@ -1,11 +1,13 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://SimpleUITheme.tres" type="Theme" id=1]
+[ext_resource path="res://RoomsList/RoomsList.gd" type="Script" id=2]
 
 [node name="RoomsList" type="Popup"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme = ExtResource( 1 )
+script = ExtResource( 2 )
 
 [node name="ColorRect" type="ColorRect" parent="."]
 anchor_right = 1.0
@@ -35,8 +37,9 @@ margin_bottom = 55.0
 
 [node name="ItemList" type="ItemList" parent="VBoxContainer/CenterContainer"]
 margin_left = 422.0
+margin_top = 16.0
 margin_right = 602.0
-margin_bottom = 32.0
+margin_bottom = 16.0
 rect_min_size = Vector2( 180, 0 )
 items = [ "MainRoom", null, false ]
 auto_height = true
