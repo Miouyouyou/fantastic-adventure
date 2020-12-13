@@ -145,6 +145,7 @@ func model_add_to_scene_wiht_collider_gltf(filepath:String):
 		model_add_to_scene_with_collider(model)
 
 func _process(delta):
+	$CanvasLayer/HBoxContainer/LabelSpeedValue.text = str($Joueur.fall)
 	while last_pos != current_pos:
 		var current_model:Spatial = queued[last_pos]
 		#var current_model_animator = find_animator_in(current_model)

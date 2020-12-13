@@ -122,6 +122,21 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "Animations"
 
+[node name="LabelSpeed" type="Label" parent="CanvasLayer/HBoxContainer"]
+margin_left = 136.0
+margin_top = 22.0
+margin_right = 243.0
+margin_bottom = 47.0
+text = "Fall Speed"
+
+[node name="LabelSpeedValue" type="Label" parent="CanvasLayer/HBoxContainer"]
+margin_left = 247.0
+margin_top = 22.0
+margin_right = 427.0
+margin_bottom = 47.0
+rect_min_size = Vector2( 180, 0 )
+clip_text = true
+
 [node name="ToExport" type="Node" parent="."]
 
 [node name="Downloads" type="Node" parent="."]

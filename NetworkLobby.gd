@@ -33,5 +33,7 @@ func _on_TextEditName_text_changed(new_text):
 	pass # Replace with function body.
 
 func create_rooms_list():
-	$RoomsList.popup_centered()
-	$RoomsList.refresh_players(Network.players)
+	#$RoomsList.popup_centered()
+	#$RoomsList.refresh_players(Network.players)
+	get_tree().change_scene("res://Test3D.tscn")
+	pass
