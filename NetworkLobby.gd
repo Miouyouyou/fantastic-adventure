@@ -19,8 +19,9 @@ func _on_ButtonJoin_pressed():
 	# Clunky... Why not pass this to the Network class
 	# and save it from there ?
 	Network.selected_ip = textbox_ip.text
+	Network.connect("joined", self, "create_rooms_list")
 	Network.connect_server()
-	create_rooms_list()
+	#create_rooms_list()
 	pass # Replace with function body.
 
 

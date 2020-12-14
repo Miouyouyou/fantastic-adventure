@@ -1,10 +1,5 @@
 extends Spatial
 
-
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
-
 onready var robot = $Robot
 onready var robot_anim = $Robot/AnimationPlayer
 
@@ -14,102 +9,9 @@ var popup:PopupMenu
 var imported_anim:AnimationPlayer
 # Called when the node enters the scene tree for the first time.
 
-var queued:Array = []
-var last_pos:int = 0
-var current_pos:int = 0
-
-var gltf_importer = PackedSceneGLTF.new()
-
-func download(url:String, id:String, to_filepath:String):
-	var http_req:HTTPRequest = HTTPRequest.new()
-	http_req.name = id
-	if http_req.connect("request_completed", self, "download_finished") == OK:
-		$Downloads.add_child(http_req)
-		http_req.set_download_file(to_filepath)
-		var ret = http_req.request(url)
-		print("Downloading : " + url + " to " + to_filepath + " (" + str(ret) + ")")
-
-func download_finished(_result, response_code, _headers, _body):
-	print("Why did I got called ??")
-
-var map_data = {}
-func map_valid(json_data):
-	# FIXME Put a real checks here
-	return true
-
-func map_entity_transform_to_vector(transform):
-	return Vector3(float(transform["x"]), float(transform["y"]), float(transform["z"]))
-
-func map_import_entity_glb_downloaded(json_def, filepath, response_code, url):
-	print("Download complete for " + url)
-	if response_code < 400:
-		var importer = PackedSceneGLTF.new()
-		var model:Spatial = importer.import(filepath)
-		if model == null:
-			return
-		var components = json_def["components"]
-		for component in components:
-			if component["name"] == "transform":
-				var transforms = component["transform"]
-				var position:Vector3 = map_entity_transform_to_vector(transforms["position"])
-				var rotation:Vector3 = map_entity_transform_to_vector(transforms["rotation"])
-				var scale:Vector3 = map_entity_transform_to_vector(transforms["scale"])
-				model.translate_object_local(position)
-				model.set_rotate_degrees(rotation)
-				model.scale_object_local(scale)
-			# TODO Deal with colliders
-		add_child(model)
-
-func map_import_entity_glb(id:String, json_def):
-	var components = json_def["components"]
-	for component in components:
-		if component["name"] == "gltf-model":
-			var filepath:String = "/tmp/" + id
-			var f = File.new()
-			if f.file_exists(filepath):
-				model_add_to_scene_wiht_collider_gltf(filepath)
-			else:
-				download(component["props"]["src"], id, filepath)
-			break
-
-func import_map(url):
-	var map_contents = {}
-	var f = File.new()
-	f.open("/home/gamer/tmp/Spoke-Export2.json", File.READ)
-	var j:JSONParseResult = JSON.parse(f.get_as_text())
-	f.close()
-	print(j.get_error())
-	print(j.get_error_string())
-	print(j.get_error_line())
-	if j.get_error() == OK:
-		var doc = j.get_result()
-		if map_valid(doc):
-			var entities = doc["entities"]
-			for entity_id in entities:
-				var entity = entities[entity_id]
-				var entity_name:String = entity["name"]
-				if entity_name.ends_with(".glb"):
-					map_import_entity_glb(entity_name, entity)
-			
-	#for entity in j["entities"]:
-	#	print(entity)
-
-func import_in_background(args):
-	var model_filepath:String = args[0]
-	var queue:Array = args[1]
-	queue.resize(8)
-	print("Processing {model}...".format({"model": model_filepath}))
-	var importer = PackedSceneGLTF.new()
-
-	print("Importer ready")
-	var nya:Spatial = importer.import_gltf_scene(model_filepath)
-	print("Imported ({node})".format({"node": nya}))
-
-	if nya != null:
-		queue[current_pos] = nya
-		current_pos += 1
-		current_pos &= 7 # max 8 objects queued
-	print("Finished processing {model}...".format({"model": model_filepath}))
+sync var players_transforms = {}
+sync var remote_players = {}
+var local_player
 
 func find_animator_in(model:Spatial):
 	for child in model.get_children():
@@ -119,55 +21,35 @@ func find_animator_in(model:Spatial):
 
 var exported:bool = false
 
-func model_imported_get_mesh(model):
-	var a = AudioServer.new()
+sync func provide_local_player_transform(id, transform):
+	players_transforms[str(id)] = transform
+	rset_unreliable("players_transforms", players_transforms)
+	print("Called provide_local_player_transform")
+	pass
 
-	
-	if model is MeshInstance:
-		return model
-	else:
-		for child in model.get_children():
-			if model_imported_get_mesh(child) is MeshInstance:
-				return child
-			else:
-				return null
-
-func model_add_to_scene_with_collider(model:Spatial):
-	var cs:MeshInstance = model_imported_get_mesh(model)
-	if cs == null:
-		return
-	cs.create_trimesh_collision()
-	add_child(model)
-
-func model_add_to_scene_wiht_collider_gltf(filepath:String):
-	var model = gltf_importer.import_gltf_scene(filepath)
-	if model != null:
-		model_add_to_scene_with_collider(model)
+func get_remote_player(id):
+	var player_id = str(id)
+	if not remote_players.has(player_id):
+		player_spawn_remote(id)
+	return remote_players[player_id]
 
 func _process(delta):
 	$CanvasLayer/HBoxContainer/LabelSpeedValue.text = str($Joueur.fall)
-	while last_pos != current_pos:
-		var current_model:Spatial = queued[last_pos]
-		#var current_model_animator = find_animator_in(current_model)
-		#for anim_name in current_model_animator.get_animation_list():
-		#	popup.add_item(anim_name)
-		#	popup.update()
-		#	print(anim_name)
-		#imported_anim = current_model_animator
-		var c:Spatial = queued[last_pos]
-		c.translate(Vector3(randf() * 15.0, 0.0, randf() * 15.0))
-		$ToExport.add_child(queued[last_pos])
-		last_pos += 1
-		last_pos &= 7
-	#if last_pos == 2 and !exported:
-	#	var p = PackedSceneGLTF.new()
-	#	exported = (p.export_gltf($ToExport, "/tmp/meow.glb") == OK)
-	
-	#for http_request in $Downloads.get_children():
-	#	if http_request.get_http_client_status() == HTTPClient.STATUS_DISCONNECTED:
-	#		print(http_request.get_download_file() + " : " + str(http_request.get_downloaded_bytes()))
-	#		model_add_to_scene_wiht_collider_gltf(http_request.get_download_file())
-	#		$Downloads.remove_child(http_request)
+
+	var id:int = Network.local_player_id
+	var local_player_transform:Transform = local_player.transform
+	if not Network._we_are_the_server():
+		rpc_unreliable_id(1, "provide_local_player_transform", id, local_player_transform)
+	else:
+		provide_local_player_transform(id, local_player_transform)
+
+	for remote_player_id in players_transforms:
+		if remote_player_id != str(Network.local_player_id):
+			var remote_player = get_remote_player(remote_player_id)
+			remote_players[remote_player_id].transform = players_transforms[remote_player_id]
+
+onready var factory_player = preload("res://Joueur.tscn")
+onready var factory_player_remote = preload("res://JoueurReseau.tscn")
 
 func _ready():
 	robot_anim.play("Love")
@@ -176,12 +58,24 @@ func _ready():
 	popup.connect("id_pressed", self, "_on_item_pressed")
 	popup.set_position(Vector2(150,150))
 	popup.show()
-	#var processing_thread:Thread = Thread.new()
-	#processing_thread.start(self, "import_in_background", ["/tmp/test.glb", queued])
-	#processing_thread = Thread.new()
-	#processing_thread.start(self, "import_in_background", ["/home/gamer/tmp/model/Fox.glb", queued])
-	#import_map("")
+
+	player_spawn_local()
+
 	pass # Replace with function body.
+
+func player_spawn_local():
+	local_player = factory_player.instance()
+	# ???
+	players_transforms[str(Network.local_player_id)] = local_player.transform
+	add_child(local_player)
+
+func player_spawn_remote(id):
+	var player_id = str(id)
+	var remote_player = factory_player_remote.instance()
+	remote_player.name = player_id
+	players_transforms[player_id] = remote_player.get_transform()
+	remote_players[player_id] = remote_player
+	add_child(factory_player_remote.instance())
 
 func _on_item_pressed(ID):
 	#var items = popup.items
@@ -191,7 +85,3 @@ func _on_item_pressed(ID):
 	#print(popup.get_item_text(ID))
 	#imported_anim.play(selected_anim)
 	pass
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass

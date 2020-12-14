@@ -15,6 +15,8 @@ sync var player_data = {}
 signal player_disconnected
 signal server_disconnected
 
+signal joined
+
 func _ready():
 	get_tree().connect("network_peer_disconnected", self, "_on_player_disconnected")
 	get_tree().connect("network_peer_connected", self, "_on_player_connected")
@@ -41,17 +43,17 @@ func add_to_player_list():
 	player_data = SavedData.saved_data["player"]
 	players[local_player_id] = player_data
 
-
 func _connected_to_server():
 	print("Connected to server")
 	add_to_player_list()
 	rpc("_send_player_info", local_player_id, player_data)
+	emit_signal("joined")
 
 func _we_are_the_server():
 	return get_tree().is_network_server()
 
 remote func _send_player_info(id, other_player_data):
-	print("RPC Called !")
+	print("send player info called !")
 	players[id] = other_player_data
 	if _we_are_the_server():
 		rset("players", players)

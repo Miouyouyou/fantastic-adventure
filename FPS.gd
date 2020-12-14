@@ -7,6 +7,7 @@ var jump = 9
 
 var mouse_sensitivity = 0.05
 
+var positions = {}
 var direction = Vector3()
 var velocity = Vector3()
 var fall = Vector3()
@@ -41,7 +42,7 @@ func _input(event):
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
-func _process(delta):
+func _physics_process(delta):
 
 	direction = Vector3()
 
@@ -49,7 +50,7 @@ func _process(delta):
 		fall.y -= gravity * delta
 	elif Input.is_action_just_pressed("jump"):
 		fall.y = jump
-		
+
 	if Input.is_action_pressed("move_forward"):
 		direction -= transform.basis.z
 	elif Input.is_action_pressed("move_backwards"):
@@ -64,3 +65,4 @@ func _process(delta):
 	velocity = velocity.linear_interpolate(direction * speed, acceleration * delta)
 	velocity = move_and_slide(velocity, Vector3.UP)
 	move_and_slide(fall, Vector3.UP)
+
