@@ -24,7 +24,6 @@ var exported:bool = false
 sync func provide_local_player_transform(id, transform):
 	players_transforms[str(id)] = transform
 	rset_unreliable("players_transforms", players_transforms)
-	print("Called provide_local_player_transform")
 	pass
 
 func get_remote_player(id):
@@ -38,6 +37,7 @@ func _process(delta):
 
 	var id:int = Network.local_player_id
 	var local_player_transform:Transform = local_player.transform
+
 	if not Network._we_are_the_server():
 		rpc_unreliable_id(1, "provide_local_player_transform", id, local_player_transform)
 	else:
@@ -47,6 +47,9 @@ func _process(delta):
 		if remote_player_id != str(Network.local_player_id):
 			var remote_player = get_remote_player(remote_player_id)
 			remote_players[remote_player_id].transform = players_transforms[remote_player_id]
+			if not Network._we_are_the_server():
+				print("Local player id = " + remote_player_id + " != " + str(Network.local_player_id))
+				print("players_transforms[" + remote_player_id + "] = " + str(players_transforms[remote_player_id]))
 
 onready var factory_player = preload("res://Joueur.tscn")
 onready var factory_player_remote = preload("res://JoueurReseau.tscn")
@@ -75,7 +78,7 @@ func player_spawn_remote(id):
 	remote_player.name = player_id
 	players_transforms[player_id] = remote_player.get_transform()
 	remote_players[player_id] = remote_player
-	add_child(factory_player_remote.instance())
+	add_child(remote_player)
 
 func _on_item_pressed(ID):
 	#var items = popup.items
