@@ -22,14 +22,14 @@ func find_animator_in(model:Spatial):
 var exported:bool = false
 
 sync func provide_local_player_transform(id, transform):
-	players_transforms[str(id)] = transform
+	players_transforms[id] = transform
 	rset_unreliable("players_transforms", players_transforms)
 	pass
 
 func get_remote_player(id):
-	var player_id = str(id)
+	var player_id = id
 	if not remote_players.has(player_id):
-		player_spawn_remote(id)
+		player_spawn_remote(player_id)
 	return remote_players[player_id]
 
 func _process(delta):
@@ -44,12 +44,12 @@ func _process(delta):
 		provide_local_player_transform(id, local_player_transform)
 
 	for remote_player_id in players_transforms:
-		if remote_player_id != str(Network.local_player_id):
+		if remote_player_id != Network.local_player_id:
 			var remote_player = get_remote_player(remote_player_id)
 			remote_players[remote_player_id].transform = players_transforms[remote_player_id]
-			if not Network._we_are_the_server():
-				print("Local player id = " + remote_player_id + " != " + str(Network.local_player_id))
-				print("players_transforms[" + remote_player_id + "] = " + str(players_transforms[remote_player_id]))
+			#if not Network._we_are_the_server():
+			#	print("Local player id = " + str(remote_player_id) + " != " + str(Network.local_player_id))
+			#	print("players_transforms[" + str(remote_player_id) + "] = " + str(players_transforms[remote_player_id]))
 
 onready var factory_player = preload("res://Joueur.tscn")
 onready var factory_player_remote = preload("res://JoueurReseau.tscn")
@@ -69,16 +69,17 @@ func _ready():
 func player_spawn_local():
 	local_player = factory_player.instance()
 	# ???
-	players_transforms[str(Network.local_player_id)] = local_player.transform
+	players_transforms[Network.local_player_id] = local_player.transform
 	add_child(local_player)
 
 func player_spawn_remote(id):
-	var player_id = str(id)
+	var player_id = id
 	var remote_player = factory_player_remote.instance()
-	remote_player.name = player_id
+	remote_player.name = str(player_id)
 	players_transforms[player_id] = remote_player.get_transform()
 	remote_players[player_id] = remote_player
 	add_child(remote_player)
+	remote_player.set_billboard_name(Network.players[player_id]["username"])
 
 func _on_item_pressed(ID):
 	#var items = popup.items

@@ -140,4 +140,5 @@ clip_text = true
 [node name="MapDownloader" parent="." instance=ExtResource( 5 )]
 transform = Transform( 5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0 )
 url = "https://uploads-prod.reticulum.io/files/a0951415-f7d6-4f30-82f4-5fb350dc2477.json"
-json_filepath = "/tmp/map2.json"
+json_filepath = "user://map.json"
+map_objects_cache_dir = "user://"
