@@ -36,7 +36,7 @@ var gltf_importer = PackedSceneGLTF.new()
 func map_file_download_path_setup_from_url():
 	json_filepath.erase(0, json_filepath.length())
 	# TODO Parsing URL like a dumbass
-	json_filepath += ("/tmp" + url.get_basename())
+	json_filepath += ("user://" + url.get_basename())
 
 func map_file_downloaded():
 	# TODO Let's actually check if the file is valid...
@@ -47,9 +47,10 @@ var map_req:HTTPRequest
 func map_file_download():
 	map_req= HTTPRequest.new()
 	map_req.set_download_file(json_filepath)
-	map_req.connect("request_completed", self, "map_file_download_ended")
+	if map_req.connect("request_completed", self, "map_file_download_ended") != OK:
+		printerr("Could not connect the handlers to the map downloader")
 	add_child(map_req)
-	map_req.request(url)
+	return map_req.request(url)
 
 func map_file_download_ended(result, response_code, _headers, _body):
 	# TODO Perform actual checks.
@@ -64,7 +65,7 @@ func map_file_download_ended(result, response_code, _headers, _body):
 	# That might make debugging harder and we'll free up... 5KB of resources...
 	remove_child(map_req)
 
-func map_content_check_and_signal_errors(json_data):
+func map_content_check_and_signal_errors(_json_data):
 	# TODO Put actual checks here...
 	return true
 
@@ -91,14 +92,17 @@ func map_instantiate_elements(json):
 		if entity_name.ends_with(".glb"):
 			map_import_entity_glb(entity_name, entity)
 
-func map_instantiate(filepath):
+func map_instantiate(_filepath):
 	actual_root_node = get_node_or_null(where)
 	if actual_root_node == null:
 		print_debug("The root node was null... Calling the police right now !")
 		# TODO Signal error : Invalid node path provided
 		return
 	var f:File = File.new()
-	f.open(json_filepath, File.READ)
+	if f.open(json_filepath, File.READ) != OK:
+		printerr("Could not open the JSON map file...")
+		# TODO Signal error : COuld not open the JSON map file...
+		return
 	var j:JSONParseResult = JSON.parse(f.get_as_text())
 	f.close()
 
@@ -121,15 +125,15 @@ func map_instantiate(filepath):
 
 	pass
 
-func map_object_download(url:String, id:String, to_filepath:String):
+func map_object_download(map_url:String, id:String, to_filepath:String):
 	# Use an actual handlers instead of doing that by hand...
 	var http_req:HTTPRequest = HTTPRequest.new()
 	http_req.name = id
 	if http_req.connect("request_completed", self, "map_object_downloaded") == OK:
 		$MapObjectsDownload.add_child(http_req)
 		http_req.set_download_file(to_filepath)
-		var ret = http_req.request(url)
-		print("Downloading : " + url + " to " + to_filepath + " (" + str(ret) + ")")
+		var ret = http_req.request(map_url)
+		print("Downloading : " + map_url + " to " + to_filepath + " (" + str(ret) + ")")
 
 func map_object_downloaded(_result, _response_code, _headers, _body):
 	# What's great about this callback, is that I have ZERO information
@@ -185,7 +189,7 @@ func _ready():
 	map_instantiate(json_filepath)
 	pass # Replace with function body.
 
-func _process(delta):
+func _process(_delta):
 	for http_request in $MapObjectsDownload.get_children():
 		if http_request.get_http_client_status() == HTTPClient.STATUS_DISCONNECTED:
 			print(http_request.get_download_file() + " : " + str(http_request.get_downloaded_bytes()))

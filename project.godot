@@ -8,11 +8,33 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "",
+"class": "GodotSpeech",
+"language": "NativeScript",
+"path": "res://bin/godot_speech.gdns"
+}, {
+"base": "",
+"class": "SpeechDecoder",
+"language": "NativeScript",
+"path": "res://bin/speech_processor.gdns"
+} ]
+_global_script_class_icons={
+"GodotSpeech": "",
+"SpeechDecoder": ""
+}
+
 [application]
 
 config/name="VRTribulations"
 run/main_scene="res://NetworkLobby.tscn"
 config/icon="res://icon.png"
+
+[audio]
+
+default_bus_layout="res://sound_with_streamable_mic.tres"
+enable_audio_input=true
+mix_rate=48000
 
 [autoload]
 
@@ -58,4 +80,6 @@ jump={
 
 [rendering]
 
+quality/filters/msaa=3
+quality/filters/use_fxaa=true
 environment/default_environment="res://default_env.tres"

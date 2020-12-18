@@ -25,7 +25,7 @@ func _on_ButtonJoin_pressed():
 	pass # Replace with function body.
 
 
-func _on_TextEditName_text_changed(new_text):
+func _on_TextEditName_text_changed(_new_text):
 	# TODO Use functions to access the players data
 	SavedData.saved_data["player"]["username"] = textbox_name.text
 	# TODO This is insane... Only save when the user Join successfully
@@ -36,5 +36,6 @@ func _on_TextEditName_text_changed(new_text):
 func create_rooms_list():
 	#$RoomsList.popup_centered()
 	#$RoomsList.refresh_players(Network.players)
-	get_tree().change_scene("res://Test3D.tscn")
+	if get_tree().change_scene("res://Test3D.tscn") != OK:
+		printerr("Could not load the main scene :C")
 	pass
