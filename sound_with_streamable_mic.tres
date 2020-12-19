@@ -1,20 +1,25 @@
 [gd_resource type="AudioBusLayout" load_steps=3 format=2]
 
-[sub_resource type="AudioEffectRecord" id=1]
-resource_name = "Record"
-
-[sub_resource type="AudioEffectStream" id=2]
+[sub_resource type="AudioEffectStream" id=1]
 resource_name = "Stream"
 
+[sub_resource type="AudioEffectRecord" id=2]
+resource_name = "Record"
+
 [resource]
-bus/0/volume_db = 6.02
 bus/1/name = "Mic"
 bus/1/solo = false
 bus/1/mute = true
 bus/1/bypass_fx = false
-bus/1/volume_db = 6.02
+bus/1/volume_db = 0.0
 bus/1/send = "Master"
 bus/1/effect/0/effect = SubResource( 1 )
 bus/1/effect/0/enabled = true
 bus/1/effect/1/effect = SubResource( 2 )
 bus/1/effect/1/enabled = true
+bus/2/name = "VoiceOutput"
+bus/2/solo = false
+bus/2/mute = false
+bus/2/bypass_fx = false
+bus/2/volume_db = 0.0
+bus/2/send = "Master"

@@ -171,7 +171,7 @@ func speech_prepare() -> void:
 
 func speech_process_audio_input_get_buffers():
 	var copied_voice_buffers : Array = speech.copy_and_clear_buffers()
-		
+
 	var current_skipped: int = speech.get_skipped_audio_packets()
 	#print("current_skipped: %s" % str(current_skipped))
 	speech.clear_skipped_audio_packets()

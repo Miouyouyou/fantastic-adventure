@@ -102,7 +102,7 @@ func create_server():
 func connect_server():
 	var peer = NetworkedMultiplayerENet.new()
 	get_tree().connect("connected_to_server", self, "_connected_to_server")
-	peer.create_client(DEFAULT_IP, DEFAULT_PORT)
+	peer.create_client(selected_ip, DEFAULT_PORT)
 	godot_connect_node(peer)
 
 func add_to_player_list():

@@ -203,8 +203,8 @@ func attempt_to_feed_stream(
 						playback.push_buffer(uncompressed_audio)
 						packet_pushed = true
 						#print_debug("Pushed buffer !")
-						#f.store_var(uncompressed_audio)
-						#f.store_32(0xdeadcafe)
+						f.store_var(uncompressed_audio)
+						f.store_32(0xdeadcafe)
 		if ! packet_pushed:
 			playback.push_buffer(blank_packet)
 
@@ -233,7 +233,8 @@ func _ready() -> void:
 	uncompressed_audio.resize(voice_manager_const.BUFFER_FRAME_COUNT)
 
 	decompress_funcref = funcref(get_node(".."), "decompress_buffer")
-	#f.open("user://playback.buffer" + str(OS.get_ticks_usec()), File.WRITE)
+	print_debug("decompress_funcref : " + str(decompress_funcref))
+	f.open("user://playback.buffer" + str(OS.get_ticks_usec()), File.WRITE)
 
 
 func _init() -> void:

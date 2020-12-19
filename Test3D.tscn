@@ -182,3 +182,4 @@ map_objects_cache_dir = "user://"
 [node name="MicrophoneStreamAudio" type="AudioStreamPlayer" parent="."]
 stream = SubResource( 10 )
 autoplay = true
+bus = "Mic"
