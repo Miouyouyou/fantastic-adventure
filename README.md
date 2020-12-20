@@ -1,4 +1,9 @@
-Currently this project depends on https://github.com/godot-extended-libraries/gltf for importing GLTF on the fly.
+Currently this project use this version of Godot :
+
+https://github.com/Miouyouyou/godot/tree/myy_vsekai
+
+This version include the runtime GLTF importer and VOIP
+with Opus codec support.
 
 The GLTF importation is still slow but, compiling Godot
 in release_debug tremendously improved the import speed.  
