@@ -8,6 +8,7 @@ func _ready():
 	textbox_name = $VBoxContainer/CenterContainer/VBoxContainer/GridContainer/TextEditName
 	textbox_name.set_text(SavedData.saved_data["player"]["username"])
 	textbox_ip.text = Network.DEFAULT_IP
+	_on_ButtonHost_pressed()
 
 func _on_ButtonHost_pressed():
 	Network.create_server()
@@ -19,7 +20,8 @@ func _on_ButtonJoin_pressed():
 	# Clunky... Why not pass this to the Network class
 	# and save it from there ?
 	Network.selected_ip = textbox_ip.text
-	Network.connect("joined", self, "create_rooms_list")
+	if Network.connect("joined", self, "create_rooms_list") != OK:
+		print_debug("Could not connect to the 'joined' signal on the Network object")
 	Network.connect_server()
 	#create_rooms_list()
 	pass # Replace with function body.

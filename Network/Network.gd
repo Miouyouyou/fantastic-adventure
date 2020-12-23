@@ -101,7 +101,8 @@ func create_server():
 
 func connect_server():
 	var peer = NetworkedMultiplayerENet.new()
-	get_tree().connect("connected_to_server", self, "_connected_to_server")
+	if get_tree().connect("connected_to_server", self, "_connected_to_server") != OK:
+		print_debug("Could not connect the connected_to_server signal of the Multiplayer stack")
 	peer.create_client(selected_ip, DEFAULT_PORT)
 	godot_connect_node(peer)
 

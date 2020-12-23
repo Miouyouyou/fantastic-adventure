@@ -115,6 +115,7 @@ __meta__ = {
 }
 
 [node name="AnimationListPopup" type="MenuButton" parent="CanvasLayer/HBoxContainer"]
+visible = false
 margin_right = 132.0
 margin_bottom = 70.0
 grow_horizontal = 2
@@ -122,31 +123,30 @@ grow_vertical = 2
 text = "Animations"
 
 [node name="LabelSpeed" type="Label" parent="CanvasLayer/HBoxContainer"]
-margin_left = 136.0
 margin_top = 22.0
-margin_right = 243.0
+margin_right = 107.0
 margin_bottom = 47.0
 text = "Fall Speed"
 
 [node name="LabelSpeedValue" type="Label" parent="CanvasLayer/HBoxContainer"]
-margin_left = 247.0
+margin_left = 111.0
 margin_top = 22.0
-margin_right = 427.0
+margin_right = 291.0
 margin_bottom = 47.0
 rect_min_size = Vector2( 180, 0 )
 clip_text = true
 
 [node name="LabelVoiceIndex" type="Label" parent="CanvasLayer/HBoxContainer"]
-margin_left = 431.0
+margin_left = 295.0
 margin_top = 22.0
-margin_right = 515.0
+margin_right = 379.0
 margin_bottom = 47.0
 text = "Voice ID"
 
 [node name="LabelVoiceIDValue" type="Label" parent="CanvasLayer/HBoxContainer"]
-margin_left = 519.0
+margin_left = 383.0
 margin_top = 22.0
-margin_right = 679.0
+margin_right = 543.0
 margin_bottom = 47.0
 rect_min_size = Vector2( 160, 0 )
 __meta__ = {
@@ -154,18 +154,31 @@ __meta__ = {
 }
 
 [node name="LabelPackets" type="Label" parent="CanvasLayer/HBoxContainer"]
-margin_left = 683.0
+margin_left = 547.0
 margin_top = 22.0
-margin_right = 765.0
+margin_right = 629.0
 margin_bottom = 47.0
 text = "Packets"
 
 [node name="LabelPacketsNumber" type="Label" parent="CanvasLayer/HBoxContainer"]
-margin_left = 769.0
+margin_left = 633.0
 margin_top = 22.0
-margin_right = 889.0
+margin_right = 753.0
 margin_bottom = 47.0
 rect_min_size = Vector2( 120, 0 )
+
+[node name="LabelJoystick" type="Label" parent="CanvasLayer/HBoxContainer"]
+margin_left = 757.0
+margin_top = 22.0
+margin_right = 841.0
+margin_bottom = 47.0
+text = "Joystick"
+
+[node name="LabelJoystickValue" type="Label" parent="CanvasLayer/HBoxContainer"]
+margin_left = 845.0
+margin_top = 22.0
+margin_right = 845.0
+margin_bottom = 47.0
 
 [node name="ToExport" type="Node" parent="."]
 

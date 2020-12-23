@@ -59,6 +59,8 @@ func _process(_delta):
 	speech_process_audio_input()
 	$CanvasLayer/HBoxContainer/LabelPacketsNumber.text = str(n_audio_packets)
 	$CanvasLayer/HBoxContainer/LabelVoiceIDValue.text = str(speech_voice_index)
+	#$CanvasLayer/HBoxContainer/LabelJoystickValue.text = str(Input.get_joy_axis(0,0))
+
 
 
 onready var factory_player = preload("res://Joueur.tscn")
@@ -82,6 +84,7 @@ func player_spawn_local():
 	local_player = factory_player.instance()
 	# ???
 	players_transforms[Network.local_player_id] = local_player.transform
+	local_player.vr_mode = true
 	add_child(local_player)
 	#speech_add_player_audio(Network.local_player_id)
 

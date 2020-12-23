@@ -1,24 +1,70 @@
 extends KinematicBody
 
-var speed = 7
-var acceleration = 20
-var gravity = 19.6 # 9.8
-var jump = 9
+var speed : float = 7
+var acceleration : float = 20
+var gravity : float = 19.6 # 9.8
+var jump : float = 9
 
-var mouse_sensitivity = 0.05
+var mouse_sensitivity : float = 0.05
 
 var positions = {}
-var direction = Vector3()
-var velocity = Vector3()
-var fall = Vector3()
+var direction : Vector3 = Vector3()
+var velocity : Vector3 = Vector3()
+var fall : Vector3 = Vector3()
 
 onready var head = $Head
 onready var animation_tree = $AnimationTree
 
+export(bool) var vr_mode : bool = false
+
+func camera_desktop_disable():
+	$Head/Camera.set_current(false)
+
+func camera_desktop_enable():
+	$Head/Camera.set_current(true)
+
+func camera_vr_enable():
+	$ARVROrigin/ARVRCamera.set_current(true)
+
+func camera_vr_disable():
+	$ARVROrigin/ARVRCamera.set_current(false)
+
+func setup_vr() -> bool:
+	var setup:bool = false
+	# We will be using OpenVR to drive the VR interface, so we need to find and initialize it.
+	var VR = ARVRServer.find_interface("OpenXR")
+	if VR and VR.initialize():
+		
+		# Turn the main viewport into a AR/VR viewport,
+		# and turn off HDR (which currently does not work)
+		get_viewport().arvr = true
+		get_viewport().hdr = false
+		
+		# Let's disable VSync so we are not running at whatever the monitor's VSync is,
+		# and let's set the target FPS to 90, which is standard for most VR headsets.
+		OS.vsync_enabled = false
+		Engine.target_fps = 90
+		# Also, the physics FPS in the project settings is also 90 FPS. This makes the physics
+		# run at the same frame rate as the display, which makes things look smoother in VR!
+		camera_desktop_disable()
+		camera_vr_enable()
+		vr_mode = true # Myy : Just in case
+		setup = true
+	return setup
+
+func setup_desktop():
+	camera_vr_disable()
+	camera_desktop_enable()
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	vr_mode = false
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	pass # Replace with function body.
+	if not vr_mode:
+		setup_desktop()
+	else:
+		if not setup_vr():
+			setup_desktop()
 
 var menu_mode_active:bool = false
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -31,6 +77,11 @@ func _input(event):
 		head.rotate_x(deg2rad(-event.relative.y * mouse_sensitivity))
 		head.rotation.x = clamp(head.rotation.x, deg2rad(-90), deg2rad(90))
 
+	if Input.is_action_pressed("vr_turnleft"):
+		$ARVROrigin.rotate_x(deg2rad(-45))
+	if Input.is_action_pressed("vr_turnright"):
+		$ARVROrigin.rotate_x(deg2rad(45))
+
 	if event is InputEventKey and !event.pressed and event.scancode == KEY_ESCAPE:
 		menu_mode_active = !menu_mode_active
 		if menu_mode_active:
@@ -38,10 +89,11 @@ func _input(event):
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
+
 func _physics_process(delta):
 
 	direction = Vector3()
-	var joystick:Vector2 = Vector2()
+	#var joystick:Vector2 = Vector2()
 
 	if not is_on_floor():
 		fall.y -= gravity * delta
@@ -74,4 +126,13 @@ func _physics_process(delta):
 	direction = direction.normalized()
 	velocity = velocity.linear_interpolate(direction * speed, acceleration * delta)
 	velocity = move_and_slide(velocity, Vector3.UP)
-	var move:Vector3 = move_and_slide(fall, Vector3.UP)
+	var _discarded = move_and_slide(fall, Vector3.UP)
+
+	for axis in range(0,15):
+		var axis_value:float = Input.get_joy_axis(0,axis)
+		if axis_value > 0.0:
+			print("Axis " + str(axis) + " : " + str(axis_value))
+	for axis in range(0,15):
+		var axis_value:float = Input.get_joy_axis(1,axis)
+		if axis_value > 0.0:
+			print("Axis " + str(axis) + " : " + str(axis_value))
