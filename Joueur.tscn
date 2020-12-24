@@ -75,7 +75,7 @@ nodes/move/position = Vector2( -60, -20 )
 nodes/output/position = Vector2( 640, 160 )
 nodes/vr_hands_mask/node = SubResource( 14 )
 nodes/vr_hands_mask/position = Vector2( 220, 120 )
-node_connections = [ "vr_hands_mask", 0, "move", "vr_hands_mask", 1, "Animation 2", "output", 0, "vr_hands_mask" ]
+node_connections = [ "output", 0, "vr_hands_mask", "vr_hands_mask", 0, "move", "vr_hands_mask", 1, "Animation 2" ]
 
 [node name="Joueur" type="KinematicBody"]
 script = ExtResource( 1 )
@@ -98,10 +98,11 @@ material/0 = null
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.067, -0.574 )
 
 [node name="Camera" type="Camera" parent="Head"]
+transform = Transform( -1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, -0.241124 )
 current = true
 
 [node name="EveJGonzalez-Mixamoed" parent="." instance=ExtResource( 3 )]
-transform = Transform( -0.02, 0, -6.51683e-09, 0, 0.02, 0, 6.51683e-09, 0, -0.02, 0, 0.149969, 0 )
+transform = Transform( 0.02, 0, 0, 0, 0.02, 0, 0, 0, 0.02, 0, 0.149969, 0 )
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
 tree_root = SubResource( 15 )
@@ -112,7 +113,7 @@ parameters/move/blend_position = Vector2( 0, 0 )
 parameters/vr_hands_mask/blend_amount = 0.0
 
 [node name="ARVROrigin" type="ARVROrigin" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.02045, 0 )
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, -1.02045, 0 )
 
 [node name="ARVRCamera" type="ARVRCamera" parent="ARVROrigin"]
 

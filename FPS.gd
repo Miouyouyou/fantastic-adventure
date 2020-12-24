@@ -74,13 +74,13 @@ var menu_mode_active:bool = false
 func _input(event):
 	if event is InputEventMouseMotion:
 		rotate_y(deg2rad(-event.relative.x * mouse_sensitivity))
-		head.rotate_x(deg2rad(-event.relative.y * mouse_sensitivity))
+		head.rotate_x(deg2rad(event.relative.y * mouse_sensitivity))
 		head.rotation.x = clamp(head.rotation.x, deg2rad(-90), deg2rad(90))
 
 	if Input.is_action_just_released("vr_turnleft"):
-		$ARVROrigin.rotate_y(deg2rad(45/2.0))
+		rotate_y(deg2rad(45/2.0))
 	if Input.is_action_just_released("vr_turnright"):
-		$ARVROrigin.rotate_y(deg2rad(-45/2.0))
+		rotate_y(deg2rad(-45/2.0))
 
 	if event is InputEventKey and !event.pressed and event.scancode == KEY_ESCAPE:
 		menu_mode_active = !menu_mode_active
@@ -102,16 +102,16 @@ func _physics_process(delta):
 
 	var move_forward:float = Input.get_action_strength("move_forward")
 	var move_backwards:float = Input.get_action_strength("move_backwards")
-	print("move_forward : " + str(move_forward))
-	print("move_backwards : " + str(move_backwards))
+	#print("move_forward : " + str(move_forward))
+	#print("move_backwards : " + str(move_backwards))
 	var joy2:Vector2 = Vector2(
 		(Input.get_action_strength("move_right") * 1.0) +
 		(Input.get_action_strength("move_left") * -1.0),
 		(Input.get_action_strength("move_forward") * 1.0)
 		+ (Input.get_action_strength("move_backwards") * -1.0))
 
-	direction += (transform.basis.x) * joy2.x
-	direction += (transform.basis.z) * (-joy2.y)
+	direction += (transform.basis.x) * -joy2.x
+	direction += (transform.basis.z) * joy2.y
 	#if Input.is_action_pressed("move_forward"):
 	#	direction -= transform.basis.z
 	#	joystick.y += 1.0
@@ -132,11 +132,11 @@ func _physics_process(delta):
 	velocity = move_and_slide(velocity, Vector3.UP)
 	var _discarded = move_and_slide(fall, Vector3.UP)
 
-	for axis in range(0,15):
-		var axis_value:float = Input.get_joy_axis(0,axis)
-		if axis_value != 0.0:
-			print("Axis " + str(axis) + " : " + str(axis_value))
-	for axis in range(0,15):
-		var axis_value:float = Input.get_joy_axis(1,axis)
-		if axis_value != 0.0:
-			print("Axis " + str(axis) + " : " + str(axis_value))
+	#for axis in range(0,15):
+	#	var axis_value:float = Input.get_joy_axis(0,axis)
+	#	if axis_value != 0.0:
+	#		print("Axis " + str(axis) + " : " + str(axis_value))
+	#for axis in range(0,15):
+	#	var axis_value:float = Input.get_joy_axis(1,axis)
+	#	if axis_value != 0.0:
+	#		print("Axis " + str(axis) + " : " + str(axis_value))

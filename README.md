@@ -25,8 +25,9 @@ The next steps will be :
 * [ ] Put a decent mirror
 * [ ] Find a way to use the GLB loader as plugin, just like the OpenXR
   plugin, and load it from the Steam version of Godot
-* [ ] Use Godot with the OpenXR plugin, invoked through SteamVR and
+* [x] Use Godot with the OpenXR plugin, invoked through SteamVR and
   test the whole thing in VR
+  * [ ] Make the player controls VR friendly
 * [ ] Implement a button to change the current character mesh + skeleton
   by a downloaded GLB
 * [ ] Implement IK to move around the arms of the characters according
