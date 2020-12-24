@@ -77,10 +77,10 @@ func _input(event):
 		head.rotate_x(deg2rad(-event.relative.y * mouse_sensitivity))
 		head.rotation.x = clamp(head.rotation.x, deg2rad(-90), deg2rad(90))
 
-	if Input.is_action_pressed("vr_turnleft"):
-		$ARVROrigin.rotate_x(deg2rad(-45))
-	if Input.is_action_pressed("vr_turnright"):
-		$ARVROrigin.rotate_x(deg2rad(45))
+	if Input.is_action_just_released("vr_turnleft"):
+		$ARVROrigin.rotate_y(deg2rad(45/2.0))
+	if Input.is_action_just_released("vr_turnright"):
+		$ARVROrigin.rotate_y(deg2rad(-45/2.0))
 
 	if event is InputEventKey and !event.pressed and event.scancode == KEY_ESCAPE:
 		menu_mode_active = !menu_mode_active
@@ -100,6 +100,10 @@ func _physics_process(delta):
 	elif Input.is_action_just_pressed("jump"):
 		fall.y = jump
 
+	var move_forward:float = Input.get_action_strength("move_forward")
+	var move_backwards:float = Input.get_action_strength("move_backwards")
+	print("move_forward : " + str(move_forward))
+	print("move_backwards : " + str(move_backwards))
 	var joy2:Vector2 = Vector2(
 		(Input.get_action_strength("move_right") * 1.0) +
 		(Input.get_action_strength("move_left") * -1.0),
@@ -130,9 +134,9 @@ func _physics_process(delta):
 
 	for axis in range(0,15):
 		var axis_value:float = Input.get_joy_axis(0,axis)
-		if axis_value > 0.0:
+		if axis_value != 0.0:
 			print("Axis " + str(axis) + " : " + str(axis_value))
 	for axis in range(0,15):
 		var axis_value:float = Input.get_joy_axis(1,axis)
-		if axis_value > 0.0:
+		if axis_value != 0.0:
 			print("Axis " + str(axis) + " : " + str(axis_value))
