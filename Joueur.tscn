@@ -1,9 +1,10 @@
-[gd_scene load_steps=20 format=2]
+[gd_scene load_steps=21 format=2]
 
 [ext_resource path="res://FPS.gd" type="Script" id=1]
 [ext_resource path="res://Models/Robot/sketchbot/robot.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Models/FirstChar/EveJGonzalez-Mixamoed.tscn" type="PackedScene" id=3]
 [ext_resource path="res://ARVRController.gd" type="Script" id=4]
+[ext_resource path="res://JoueurIK.gd" type="Script" id=5]
 
 [sub_resource type="CapsuleShape" id=1]
 radius = 0.5
@@ -63,7 +64,6 @@ filter_enabled = true
 filters = [ "Node 2/Skeleton:head", "Node 2/Skeleton:hips", "Node 2/Skeleton:left_arm", "Node 2/Skeleton:left_fore_arm", "Node 2/Skeleton:left_hand", "Node 2/Skeleton:left_hand_index_1", "Node 2/Skeleton:left_hand_index_2", "Node 2/Skeleton:left_hand_index_3", "Node 2/Skeleton:left_hand_middle_1", "Node 2/Skeleton:left_hand_middle_2", "Node 2/Skeleton:left_hand_middle_3", "Node 2/Skeleton:left_hand_pinky_1", "Node 2/Skeleton:left_hand_pinky_2", "Node 2/Skeleton:left_hand_pinky_3", "Node 2/Skeleton:left_hand_ring_1", "Node 2/Skeleton:left_hand_ring_2", "Node 2/Skeleton:left_hand_ring_3", "Node 2/Skeleton:left_hand_thumb_1", "Node 2/Skeleton:left_hand_thumb_2", "Node 2/Skeleton:left_hand_thumb_3", "Node 2/Skeleton:left_shoulder", "Node 2/Skeleton:neck", "Node 2/Skeleton:right_arm", "Node 2/Skeleton:right_fore_arm", "Node 2/Skeleton:right_hand", "Node 2/Skeleton:right_hand_index_1", "Node 2/Skeleton:right_hand_index_2", "Node 2/Skeleton:right_hand_index_3", "Node 2/Skeleton:right_hand_middle_1", "Node 2/Skeleton:right_hand_middle_2", "Node 2/Skeleton:right_hand_middle_3", "Node 2/Skeleton:right_hand_pinky_1", "Node 2/Skeleton:right_hand_pinky_2", "Node 2/Skeleton:right_hand_pinky_3", "Node 2/Skeleton:right_hand_ring_1", "Node 2/Skeleton:right_hand_ring_2", "Node 2/Skeleton:right_hand_ring_3", "Node 2/Skeleton:right_hand_thumb_1", "Node 2/Skeleton:right_hand_thumb_2", "Node 2/Skeleton:right_hand_thumb_3", "Node 2/Skeleton:right_shoulder", "Node 2/Skeleton:spine", "Node 2/Skeleton:spine_1", "Node 2/Skeleton:spine_2" ]
 
 [sub_resource type="AnimationNodeBlendTree" id=15]
-graph_offset = Vector2( -381, -39 )
 nodes/Animation/node = SubResource( 4 )
 nodes/Animation/position = Vector2( -220, 280 )
 "nodes/Animation 2/node" = SubResource( 3 )
@@ -101,21 +101,18 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.067, -0.574 )
 transform = Transform( -1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, -0.241124 )
 current = true
 
-[node name="EveJGonzalez-Mixamoed" parent="." instance=ExtResource( 3 )]
-transform = Transform( 0.02, 0, 0, 0, 0.02, 0, 0, 0, 0.02, 0, 0.149969, 0 )
-
 [node name="AnimationTree" type="AnimationTree" parent="."]
 tree_root = SubResource( 15 )
-anim_player = NodePath("../EveJGonzalez-Mixamoed/AnimationPlayer")
-active = true
+anim_player = NodePath("../RenIK/EveJGonzalez-Mixamoed/AnimationPlayer")
 parameters/BlendSpace1D/blend_position = 0.975
 parameters/move/blend_position = Vector2( 0, 0 )
 parameters/vr_hands_mask/blend_amount = 0.0
 
 [node name="ARVROrigin" type="ARVROrigin" parent="."]
-transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, -1.02045, 0 )
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0, -1.89223 )
 
 [node name="ARVRCamera" type="ARVRCamera" parent="ARVROrigin"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.331 )
 
 [node name="ARVRControllerLeft" type="ARVRController" parent="ARVROrigin"]
 script = ExtResource( 4 )
@@ -123,4 +120,26 @@ script = ExtResource( 4 )
 [node name="ARVRControllerRight" type="ARVRController" parent="ARVROrigin"]
 controller_id = 2
 
-[editable path="EveJGonzalez-Mixamoed"]
+[node name="RenIK" type="RenIK" parent="."]
+armature_skeleton_path = NodePath("/root/EditorNode/@@592/@@593/@@601/@@603/@@607/@@611/@@612/@@613/@@629/@@630/@@639/@@640/@@6189/@@6028/@@6029/@@6030/@@6031/@@6032/Joueur/RenIK/EveJGonzalez-Mixamoed/Node 2/Skeleton")
+armature_head = "head"
+armature_left_hand = "left_hand"
+armature_right_hand = "right_hand"
+armature_hip = "hips"
+armature_left_foot = "left_foot"
+armature_right_foot = "right_foot"
+armature_head_target = NodePath("../LookAtNode")
+armature_left_hand_target = NodePath("../LookAtNode")
+armature_right_hand_target = NodePath("../LookAtNode")
+armature_hip_target = NodePath("../ARVROrigin")
+armature_left_foot_target = NodePath("../ARVROrigin")
+armature_right_foot_target = NodePath("../ARVROrigin")
+script = ExtResource( 5 )
+
+[node name="EveJGonzalez-Mixamoed" parent="RenIK" instance=ExtResource( 3 )]
+transform = Transform( 0.02, 0, 0, 0, 0.02, 0, 0, 0, 0.02, 0, 0.149969, 0 )
+
+[node name="LookAtNode" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.783017, 1.16056 )
+
+[editable path="RenIK/EveJGonzalez-Mixamoed"]
