@@ -1,0 +1,106 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://Models/VRoidStudio/Sakurada_blender_reexport.glb" type="PackedScene" id=1]
+[ext_resource path="res://addons/sade/ik_look_at.gd" type="Script" id=2]
+
+[sub_resource type="SpatialMaterial" id=1]
+albedo_color = Color( 0, 0.905882, 1, 1 )
+
+[sub_resource type="SpatialMaterial" id=2]
+albedo_color = Color( 0.0470588, 0.921569, 0.0196078, 1 )
+
+[sub_resource type="VisualShaderNodeColorConstant" id=3]
+constant = Color( 0.855469, 0, 0, 1 )
+
+[sub_resource type="VisualShader" id=4]
+code = "shader_type spatial;
+render_mode specular_schlick_ggx;
+
+
+
+
+void vertex() {
+// Output:0
+
+}
+
+void fragment() {
+// Color:2
+	vec3 n_out2p0 = vec3(0.855469, 0.000000, 0.000000);
+	float n_out2p1 = 1.000000;
+
+// Output:0
+	ALBEDO = n_out2p0;
+
+}
+
+void light() {
+// Output:0
+
+}
+"
+graph_offset = Vector2( 0, 75 )
+nodes/fragment/2/node = SubResource( 3 )
+nodes/fragment/2/position = Vector2( 200, 163 )
+nodes/fragment/connections = PoolIntArray( 2, 0, 0, 0 )
+
+[sub_resource type="ShaderMaterial" id=5]
+shader = SubResource( 4 )
+
+[node name="ARVROrigin" type="ARVROrigin"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.811976, 0.219311 )
+
+[node name="ManetteGauche" type="ARVRController" parent="."]
+
+[node name="IK_LookAt_LeftArm" type="Spatial" parent="ManetteGauche"]
+transform = Transform( -1.62921e-07, -1, 0, 1, -1.62921e-07, 0, 0, 0, 1, 0, 0, 0 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+skeleton_path = NodePath("../../ARVRCamera/Sakurada_blender_reexport/Armature/Skeleton")
+bone_name = "j_bip_l_upper_arm"
+look_at_axis = 0
+use_our_rotation_z = true
+additional_rotation = Vector3( 270, 0, 0 )
+debug_messages = true
+
+[node name="CSGSphere" type="CSGSphere" parent="ManetteGauche/IK_LookAt_LeftArm"]
+material_override = SubResource( 1 )
+radius = 0.1
+
+[node name="ManetteDroite" type="ARVRController" parent="."]
+controller_id = 2
+
+[node name="IK_LookAt_RightArm" type="Spatial" parent="ManetteDroite"]
+transform = Transform( 1.19249e-08, 1, 0, -1, 1.19249e-08, 0, 0, 0, 1, 0, 0, 0 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+skeleton_path = NodePath("../../ARVRCamera/Sakurada_blender_reexport/Armature/Skeleton")
+bone_name = "j_bip_r_upper_arm"
+look_at_axis = 0
+use_our_rotation_z = true
+additional_rotation = Vector3( 270, 0, 0 )
+
+[node name="CSGSphere2" type="CSGSphere" parent="ManetteDroite/IK_LookAt_RightArm"]
+material_override = SubResource( 2 )
+radius = 0.1
+
+[node name="ARVRCamera" type="ARVRCamera" parent="."]
+
+[node name="IK_LookAt_Head" type="Spatial" parent="ARVRCamera"]
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+skeleton_path = NodePath("../Sakurada_blender_reexport/Armature/Skeleton")
+bone_name = "j_bip_c_head"
+
+[node name="CSGSphere3" type="CSGSphere" parent="ARVRCamera/IK_LookAt_Head"]
+material_override = SubResource( 5 )
+radius = 0.1
+
+[node name="Sakurada_blender_reexport" parent="ARVRCamera" instance=ExtResource( 1 )]
+transform = Transform( -1, 0, 3.25841e-07, 0, 1, 0, -3.25841e-07, 0, -1, -7.14605e-08, -0.811976, 0.219311 )

@@ -1,0 +1,31 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://Models/KemonoFriends-Tora/尻尾.material" type="Material" id=1]
+[ext_resource path="res://Models/KemonoFriends-Tora/服.material" type="Material" id=2]
+[ext_resource path="res://Models/KemonoFriends-Tora/ネクタイ.material" type="Material" id=3]
+[ext_resource path="res://Models/KemonoFriends-Tora/スカート.material" type="Material" id=4]
+[ext_resource path="res://Models/KemonoFriends-Tora/体.material" type="Material" id=5]
+[ext_resource path="res://Models/KemonoFriends-Tora/顔.material" type="Material" id=6]
+[ext_resource path="res://Models/KemonoFriends-Tora/目.material" type="Material" id=7]
+[ext_resource path="res://Models/KemonoFriends-Tora/tora-nosb.glb" type="PackedScene" id=8]
+[ext_resource path="res://Models/KemonoFriends-Tora/ハイライト.material" type="Material" id=9]
+[ext_resource path="res://Models/KemonoFriends-Tora/蒼白.material" type="Material" id=10]
+[ext_resource path="res://Models/KemonoFriends-Tora/髪.material" type="Material" id=11]
+[ext_resource path="res://Models/KemonoFriends-Tora/涙.material" type="Material" id=12]
+[ext_resource path="res://Models/KemonoFriends-Tora/紅潮.material" type="Material" id=13]
+
+[node name="tora-nosb" instance=ExtResource( 8 )]
+
+[node name="Tora_mesh" parent="Tora/Tora_arm/Skeleton" index="0"]
+material/0 = ExtResource( 2 )
+material/1 = ExtResource( 4 )
+material/2 = ExtResource( 3 )
+material/3 = ExtResource( 5 )
+material/4 = ExtResource( 1 )
+material/5 = ExtResource( 6 )
+material/6 = ExtResource( 7 )
+material/7 = ExtResource( 9 )
+material/8 = ExtResource( 11 )
+material/9 = ExtResource( 12 )
+material/10 = ExtResource( 10 )
+material/11 = ExtResource( 13 )

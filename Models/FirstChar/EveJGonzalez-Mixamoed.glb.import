@@ -13,7 +13,7 @@ dest_files=[ "res://.import/EveJGonzalez-Mixamoed.glb-a9fc03d500a0bf0b624e9716fa
 
 nodes/root_type="Spatial"
 nodes/root_name="Scene Root"
-nodes/root_scale=1.0
+nodes/root_scale=0.02
 nodes/custom_script=""
 nodes/storage=0
 materials/location=1

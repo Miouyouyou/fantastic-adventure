@@ -73,15 +73,17 @@ var menu_mode_active:bool = false
 
 func _input(event):
 	if event is InputEventMouseMotion:
-		rotate_y(deg2rad(-event.relative.x * mouse_sensitivity))
+		#rotate_y(deg2rad(-event.relative.x * mouse_sensitivity))
 		head.rotate_x(deg2rad(event.relative.y * mouse_sensitivity))
 		head.rotation.x = clamp(head.rotation.x, deg2rad(-90), deg2rad(90))
-
+		#$LookAtNode.translate(Vector3(event.relative.x*0.01, -event.relative.y*0.01, 0))
+#
 	if Input.is_action_just_released("vr_turnleft"):
+	#	print("Meep")
 		rotate_y(deg2rad(45/2.0))
 	if Input.is_action_just_released("vr_turnright"):
 		rotate_y(deg2rad(-45/2.0))
-
+#
 	if event is InputEventKey and !event.pressed and event.scancode == KEY_ESCAPE:
 		menu_mode_active = !menu_mode_active
 		if menu_mode_active:
@@ -90,7 +92,13 @@ func _input(event):
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 
+var frames : int = 0
 func _physics_process(delta):
+
+	if frames < 5:
+		ARVRServer.center_on_hmd(ARVRServer.RESET_BUT_KEEP_TILT, true)
+		print("Recentering")
+		frames += 1
 
 	direction = Vector3()
 	#var joystick:Vector2 = Vector2()
@@ -110,8 +118,19 @@ func _physics_process(delta):
 		(Input.get_action_strength("move_forward") * 1.0)
 		+ (Input.get_action_strength("move_backwards") * -1.0))
 
-	direction += (transform.basis.x) * -joy2.x
-	direction += (transform.basis.z) * joy2.y
+	var t : Basis = $ARVROrigin/ARVRCamera.global_transform.basis # transform.basis
+	print("\nLocal : " + str($ARVROrigin/ARVRCamera.transform.basis)
+		+ "\nGlobal : " + str($ARVROrigin/ARVRCamera.global_transform.basis))
+	#t = t.rotated(t.y, deg2rad(45))
+
+	direction += (t.x) * joy2.x
+	direction += (t.z) * -joy2.y
+
+
+	#if Input.is_action_just_released("vr_turnleft"):
+	#	$ARVROrigin.rotate_y(deg2rad(45/2.0))
+	#if Input.is_action_just_released("vr_turnright"):
+	#	$ARVROrigin.rotate_y(deg2rad(-45/2.0))
 	#if Input.is_action_pressed("move_forward"):
 	#	direction -= transform.basis.z
 	#	joystick.y += 1.0

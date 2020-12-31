@@ -41,6 +41,10 @@ mix_rate=48000
 Network="*res://Network/Network.gd"
 SavedData="*res://SavedData/SavedData.gd"
 
+[editor_plugins]
+
+enabled=PoolStringArray( "sade", "sketchfab" )
+
 [gdnative]
 
 singletons=[ "res://addons/godot-openxr/godot_openxr.gdnlib" ]
