@@ -95,10 +95,12 @@ func _input(event):
 var frames : int = 0
 func _physics_process(delta):
 
-	if frames < 5:
+	if frames == 60:
+		var camera_rotation:float = $ARVROrigin/ARVRCamera.rotation.y
+		rotate_y(camera_rotation)
 		ARVRServer.center_on_hmd(ARVRServer.RESET_BUT_KEEP_TILT, true)
-		print("Recentering")
-		frames += 1
+		print("Recentered !")
+	frames += 1
 
 	direction = Vector3()
 	#var joystick:Vector2 = Vector2()
@@ -119,8 +121,8 @@ func _physics_process(delta):
 		+ (Input.get_action_strength("move_backwards") * -1.0))
 
 	var t : Basis = $ARVROrigin/ARVRCamera.global_transform.basis # transform.basis
-	print("\nLocal : " + str($ARVROrigin/ARVRCamera.transform.basis)
-		+ "\nGlobal : " + str($ARVROrigin/ARVRCamera.global_transform.basis))
+	#print("\nLocal : " + str($ARVROrigin/ARVRCamera.transform.basis)
+	#	+ "\nGlobal : " + str($ARVROrigin/ARVRCamera.global_transform.basis))
 	#t = t.rotated(t.y, deg2rad(45))
 
 	direction += (t.x) * joy2.x

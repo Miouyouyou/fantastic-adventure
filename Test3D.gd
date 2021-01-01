@@ -84,7 +84,7 @@ func player_spawn_local():
 	local_player = factory_player.instance()
 	# ???
 	players_transforms[Network.local_player_id] = local_player.transform
-	local_player.vr_mode = true
+	local_player.vr_mode = SavedData.player_data()["vr"]
 	add_child(local_player)
 	#speech_add_player_audio(Network.local_player_id)
 

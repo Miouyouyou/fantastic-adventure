@@ -1,14 +1,17 @@
 extends Control
 
 var textbox_name:LineEdit
+var checkbox_vr:CheckBox
 
 onready var textbox_ip = $VBoxContainer/CenterContainer/VBoxContainer/GridContainer/TextEditIP
 
 func _ready():
 	textbox_name = $VBoxContainer/CenterContainer/VBoxContainer/GridContainer/TextEditName
-	textbox_name.set_text(SavedData.saved_data["player"]["username"])
+	checkbox_vr = $VBoxContainer/CenterContainer/VBoxContainer/CheckBoxVR
+	var player_data : Dictionary = SavedData.player_data()
+	textbox_name.set_text(player_data["username"])
+	checkbox_vr.set_pressed(player_data["vr"])
 	textbox_ip.text = Network.DEFAULT_IP
-	_on_ButtonHost_pressed()
 
 func _on_ButtonHost_pressed():
 	Network.create_server()
@@ -30,14 +33,17 @@ func _on_ButtonJoin_pressed():
 func _on_TextEditName_text_changed(_new_text):
 	# TODO Use functions to access the players data
 	SavedData.saved_data["player"]["username"] = textbox_name.text
-	# TODO This is insane... Only save when the user Join successfully
-	# or start hosting
-	SavedData.save_data()
 	pass # Replace with function body.
 
 func create_rooms_list():
 	#$RoomsList.popup_centered()
 	#$RoomsList.refresh_players(Network.players)
+	SavedData.save_data()
 	if get_tree().change_scene("res://Test3D.tscn") != OK:
 		printerr("Could not load the main scene :C")
 	pass
+
+
+func _on_CheckBoxVR_toggled(button_pressed):
+	SavedData.saved_data["player"]["vr"] = button_pressed
+	pass # Replace with function body.

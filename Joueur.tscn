@@ -106,18 +106,25 @@ parameters/move/blend_position = Vector2( 0, 0 )
 parameters/vr_hands_mask/blend_amount = 0.0
 
 [node name="ARVROrigin" parent="." instance=ExtResource( 2 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+transform = Transform( -1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0 )
 
 [node name="ARVRCamera" parent="ARVROrigin" index="2"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.64103, 0 )
 
+[node name="IK_LookAt_Head" parent="ARVROrigin/ARVRCamera" index="0"]
+visible = false
+
 [node name="CSGSphere3" parent="ARVROrigin/ARVRCamera/IK_LookAt_Head" index="0"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.258802 )
+visible = false
 
 [node name="Sakurada_blender_reexport" parent="ARVROrigin/ARVRCamera" index="1"]
 transform = Transform( -1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, -1.60577, 0.20102 )
 
 [node name="Sakurada_blender_reexport" parent="." instance=ExtResource( 3 )]
 visible = false
+
+[node name="CSGSphere" type="CSGSphere" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.950016, 0.989453 )
+radius = 0.1
 
 [editable path="ARVROrigin"]

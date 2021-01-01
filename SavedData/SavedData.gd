@@ -1,7 +1,7 @@
 extends Node
 
 
-var saved_data = {}
+var saved_data : Dictionary = {}
 const SAVE_PATH = "user://userprefs.json"
 
 func _ready():
@@ -9,7 +9,7 @@ func _ready():
 
 func fill_with_defaults(save:Dictionary):
 	save["system"] = {}
-	save["player"] = {"username": "Unnamed hamster"}
+	save["player"] = {"username": "Unnamed hamster", "vr": false}
 
 func save_data_using(new_save_data):
 	# TODO Make a backup of the old save, just in case
@@ -51,8 +51,8 @@ func load_data():
 	# Provide some clue to the user
 	return data_loaded
 
-func user_data():
+func player_data() -> Dictionary :
 	return saved_data["player"]
 
-func player_data():
+func system_data() -> Dictionary :
 	return saved_data["system"]
