@@ -95,6 +95,17 @@ func _input(event):
 var frames : int = 0
 func _physics_process(delta):
 
+
+	# TODO : Best way !
+	# Sample the distance between the Collider and the ARVRCamera.
+	# Offset the ARVROrigin by that distance in order to center the
+	# ARVRCamera on the Collider (and rotate the ARVROrigin so that
+	# the camera faces forward...).
+	# THEN, on "sit mode", just ignore any move.
+	# On "Standing mode", apply a move_and_slide based on that
+	# distance.
+	# This should take care of everything and the kitchen sink in
+	# terms of VR Move.
 	if frames == 60:
 		var camera_rotation:float = $ARVROrigin/ARVRCamera.rotation.y
 		rotate_y(camera_rotation)

@@ -1,0 +1,106 @@
+{
+    "version": 1,
+    "images": [
+        {
+            "type": "image/png",
+            "url": "https://models.miouyouyou.fr/sakurada.png"
+        }
+    ],
+    "persons": [
+        {
+            "name": "Miouyouyou",
+            "url": "https://miouyouyou.fr"
+        },
+        {
+            "name": "Pixiv",
+            "url": "https://vroid.com/en/studio"
+        }
+    ],
+    "licences": [
+        {
+            "name": "Custom VRoid Studio licence",
+            "details": "Default asset provided with VRoid Studio. Licence unknown."
+        }
+    ],
+    "assets": [
+        {
+            "type": "model",
+            "url": "https://models.miouyouyou.fr/Sakurada.glb",
+            "format": "GLB",
+            "uploaders": [0],
+            "original_creators": [1],
+            "modified_by": [0],
+            "thumbnails": [0],
+            "licence": [256]
+        }
+    ],
+    "setup": {
+        "model": [0],
+        "head": {
+            "type": "Head",
+            "translation": [0,1.65,0],
+            "near": 0.05,
+            "far": 100
+        },
+        "vr_origin": {
+            "translation": [0,0,0],
+            "rotation_degrees": [0,-180,0]
+        },
+        "ik": {
+            "type": "FABRIK",
+            "look_at": [
+                {
+                    "name": "VRArmLeft",
+                    "translation": [0,0,0],
+                    "rotation_degrees": [0,0,90],
+                    "target_skeleton_from": [0],
+                    "target_bone_name": "j_bip_l_upper_arm",
+                    "update_mode": 0,
+                    "look_at_axis": 0,
+                    "use_our_rotation_x": false,
+                    "use_our_rotation_y": false,
+                    "use_our_rotation_z": true,
+                    "use_negative_our_rot": false,
+                    "additional_rotation": [270,0,0],
+                    "position_using_additional_bone": false,
+                    "additional_bone_name": "",
+                    "additional_bone_length": 1
+                },
+                {
+                    "name": "VRArmRight",
+                    "translation": [0,0,0],
+                    "rotation_degrees": [0,0,-90],
+                    "target_skeleton_from": [0],
+                    "target_bone_name": "j_bip_r_upper_arm",
+                    "update_mode": 0,
+                    "look_at_axis": 0,
+                    "use_our_rotation_x": false,
+                    "use_our_rotation_y": false,
+                    "use_our_rotation_z": true,
+                    "use_negative_our_rot": false,
+                    "additional_rotation": [270,0,0],
+                    "position_using_additional_bone": false,
+                    "additional_bone_name": "",
+                    "additional_bone_length": 1
+                },
+                {
+                    "name": "VRHead",
+                    "translation": [0,0,0],
+                    "rotation_degrees": [0,0,0],
+                    "target_skeleton_from": [0],
+                    "target_bone_name": "j_bip_c_head",
+                    "update_mode": 0,
+                    "look_at_axis": 1,
+                    "use_our_rotation_x": false,
+                    "use_our_rotation_y": false,
+                    "use_our_rotation_z": false,
+                    "use_negative_our_rot": false,
+                    "additional_rotation": [0,0,0],
+                    "position_using_additional_bone": false,
+                    "additional_bone_name": "",
+                    "additional_bone_length": 1
+                }
+            ]
+        }
+    }
+}
