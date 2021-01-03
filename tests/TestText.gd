@@ -5,6 +5,8 @@ var show:bool = true
 func _ready():
 	$Label.text = "Un poukacha sauvage apparaît. Il essaye de piquer votre portefeuille."
 	print($Label.get_minimum_size())
+	print(Vector3.FORWARD)
+	print(Vector3.LEFT)
 
 func _unhandled_key_input(event):
 	var e:InputEventKey = event

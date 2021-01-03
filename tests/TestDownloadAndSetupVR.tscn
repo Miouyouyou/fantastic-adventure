@@ -3,7 +3,6 @@
 [ext_resource path="res://tests/TestDownloadAndSetupVR.gd" type="Script" id=1]
 
 [node name="ARVROrigin" type="ARVROrigin"]
-transform = Transform( -1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0 )
 script = ExtResource( 1 )
 construct_conf_filepath = "user://Sakurada_def.json"
 
@@ -14,3 +13,4 @@ controller_id = 2
 
 [node name="ARVRCamera" type="ARVRCamera" parent="."]
 current = true
+near = 0.01

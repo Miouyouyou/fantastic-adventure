@@ -58,22 +58,21 @@ func setup_with_json_config(config_json:String) -> bool:
 	var vr_headset : ARVRCamera = $ARVRCamera
 	var ik_look_at = preload("res://tests/IKLookAtNode.tscn")
 	var model_generator : PackedSceneGLTF = PackedSceneGLTF.new()
-	var models : Array = [model_generator.import_gltf_scene("user://Sakurada.glb")]
+	var models : Array = [model_generator.import_gltf_scene("user://Sakurada_Fumiriya.glb")]
 
 	var setup_config : Dictionary = config["setup"]
 	var vr_origin_config : Dictionary = setup_config["vr_origin"]
 	vr_origin.translation = array_to_vector3(vr_origin_config["translation"])
 	vr_origin.rotation_degrees = array_to_vector3(vr_origin_config["rotation_degrees"])
 
-	var head_config : Dictionary = setup_config["head"]
-	vr_headset.near = head_config["near"]
-	vr_headset.far = head_config["far"]
+	var eyes_config : Dictionary = setup_config["eyes"]
+	vr_headset.near = eyes_config["near"]
+	vr_headset.far = eyes_config["far"]
 
 	var targeted_model : Spatial = models[setup_config["model"][0]]
-	var head_location = array_to_vector3(head_config["translation"])
-	head_location.y = -head_location.y
-	head_location.z = -head_location.z
-	targeted_model.translate(head_location)
+	var eyes_location = array_to_vector3(eyes_config["translation"])
+	eyes_location *= -1
+	targeted_model.translate(eyes_location)
 	vr_headset.add_child(targeted_model)
 
 	var ik_config : Dictionary = config["setup"]["ik"]
@@ -109,9 +108,6 @@ func setup_with_json_config(config_json:String) -> bool:
 			_:
 				print("Node added to the Origin, because I don't know where to put it !")
 				vr_origin.add_child(ik_look_at_node)
-		ik_look_at_node.update_skeleton()
-		ik_look_at_node.skeleton_to_use = targeted_model_skeleton
-		ik_look_at_node.update_skeleton()
 	return true
 
 

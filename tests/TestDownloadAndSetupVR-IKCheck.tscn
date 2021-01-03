@@ -1,0 +1,42 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://tests/TestDownloadAndSetupVR.gd" type="Script" id=1]
+[ext_resource path="res://Models/VRoidStudio/Sakurada_Fumiriya.glb" type="PackedScene" id=2]
+[ext_resource path="res://addons/sade/ik_look_at.gd" type="Script" id=3]
+
+[node name="ARVROrigin" type="ARVROrigin"]
+script = ExtResource( 1 )
+construct_conf_filepath = "user://Sakurada_def.json"
+
+[node name="ManetteGauche" type="ARVRController" parent="."]
+
+[node name="ManetteDroite" type="ARVRController" parent="."]
+controller_id = 2
+
+[node name="ARVRCamera" type="ARVRCamera" parent="."]
+current = true
+near = 0.01
+
+[node name="Sakurada_Fumiriya" parent="ARVRCamera" instance=ExtResource( 2 )]
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.80955, 0.587051, 0, -0.587051, 0.80955, 0, 1.21308, 0.673797 )
+current = true
+
+[node name="IK_LookAt" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.314317, 1.53447, -0.555451 )
+script = ExtResource( 3 )
+skeleton_path = NodePath("../ARVRCamera/Sakurada_Fumiriya/Skeleton")
+bone_name = "j_bip_r_upper_arm"
+use_our_rotation_z = true
+additional_rotation = Vector3( 0, 90, 0 )
+
+[node name="IK_LookAt2" type="Spatial" parent="."]
+transform = Transform( -1.62921e-07, -1, 0, 1, -1.62921e-07, 0, 0, 0, 1, -0.259434, 1.51269, -0.62995 )
+script = ExtResource( 3 )
+skeleton_path = NodePath("../ARVRCamera/Sakurada_Fumiriya/Skeleton")
+bone_name = "j_bip_l_upper_arm"
+use_our_rotation_z = true
+additional_rotation = Vector3( 0, 270, 0 )
+
+[editable path="ARVRCamera/Sakurada_Fumiriya"]
