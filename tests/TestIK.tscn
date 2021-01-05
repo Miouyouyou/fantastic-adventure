@@ -1,18 +1,23 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://Models/KemonoFriends-Tora/tora-nosb.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Models/VRoidStudio/Sakurada_Fumiriya.glb" type="PackedScene" id=2]
 
 [node name="Spatial" type="Spatial"]
 
 [node name="RenIK" type="RenIK" parent="."]
-armature_skeleton_path = NodePath("/root/EditorNode/@@592/@@593/@@601/@@603/@@607/@@611/@@612/@@613/@@629/@@630/@@639/@@640/@@6189/@@6028/@@6029/@@6030/@@6031/@@6032/Spatial")
+live_preview = true
+armature_skeleton_path = NodePath("/root/EditorNode/@@592/@@593/@@601/@@603/@@607/@@611/@@612/@@613/@@629/@@630/@@639/@@640/@@6189/@@6028/@@6029/@@6030/@@6031/@@6032/Spatial/tora-nosb/Tora/Tora_arm/Skeleton")
 armature_head = "頭"
 armature_left_hand = "手首._l"
 armature_right_hand = "手首._r"
-armature_hip = "全ての親"
-armature_left_foot = "足ｉｋ._l"
-armature_right_foot = "足ｉｋ._r"
-armature_head_target = NodePath("../CSGSphere")
+armature_hip = "センター"
+armature_left_foot = "つま先ｉｋ._l"
+armature_right_foot = "つま先ｉｋ._r"
+armature_head_target = NodePath("../TargetHead")
+armature_left_hand_target = NodePath("../TargetHandLeft")
+armature_right_hand_target = NodePath("../TargetHandRight")
+armature_hip_target = NodePath("../TargetHips")
 arm_twist_inflection_point = -47.1
 arm_shoulder_influence = 34.6
 arm_shoulder_offset = Vector3( -20, 0, 0 )
@@ -20,12 +25,50 @@ arm_pole_offset = Vector3( -10, 0, 0 )
 arm_target_position_influence = Vector3( 0, 0, 0 )
 arm_target_rotation_influence = 0.0
 arm_shoulder_pole_offset = Vector3( 0, 0, 0 )
+torso_spine_curve = Vector3( 0, 0, 0 )
+torso_upper_spine_stiffness = 27.9
+torso_lower_spine_stiffness = 29.9
+torso_spine_twist = 31.4
 walk_collide_with_bodies = false
 
 [node name="tora-nosb" parent="." instance=ExtResource( 1 )]
 
-[node name="CSGSphere" type="CSGSphere" parent="."]
-transform = Transform( 0.993674, -0.00620893, -0.112136, -0.00265727, 0.996891, -0.0787438, 0.112277, 0.0785436, 0.990568, -0.0524413, 1.1229, 0.605264 )
-radius = 0.0910057
+[node name="TargetHead" type="CSGSphere" parent="."]
+transform = Transform( 0.999987, 0, 0.0051487, 0, 1, 0, -0.0051487, 0, 0.999987, 0.00254756, 1.3651, 0.132404 )
+radius = 0.05
+
+[node name="TargetHandRight" type="CSGSphere" parent="."]
+transform = Transform( -0.96142, 0, 0.275084, 0, 1, 0, -0.275084, 0, -0.96142, -0.353604, 1.11871, 0.402282 )
+radius = 0.05
+
+[node name="TargetHandLeft" type="CSGSphere" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.996255, 0.0864602, 0, -0.0864602, 0.996255, 0.330401, 1.11801, 0.393899 )
+radius = 0.05
+
+[node name="TargetHips" type="CSGSphere" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0136648, 0.710765, 0.103154 )
+radius = 0.05
+
+[node name="TargetFootLeft" type="CSGSphere" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.99871, -0.0507847, 0, 0.0507847, 0.99871, 0.0805829, 0.142859, 0.30841 )
+radius = 0.05
+
+[node name="TargetFootRight" type="CSGSphere" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.108394, 0.0449375, 0.167626 )
+radius = 0.05
+
+[node name="Sakurada_Fumiriya" parent="." instance=ExtResource( 2 )]
+visible = false
+
+[node name="RenIK2" type="RenIK" parent="."]
+armature_skeleton_path = NodePath("/root/EditorNode/@@592/@@593/@@601/@@603/@@607/@@611/@@612/@@613/@@629/@@630/@@639/@@640/@@6189/@@6028/@@6029/@@6030/@@6031/@@6032/Spatial/Sakurada_Fumiriya/Skeleton")
+armature_head = "j_bip_c_head"
+armature_left_hand = "j_bip_l_hand"
+armature_right_hand = "j_bip_r_hand"
+armature_hip = "j_bip_c_hips"
+armature_left_foot = "j_bip_l_foot"
+armature_right_foot = "j_bip_r_foot"
+armature_head_target = NodePath("../CSGSphere")
 
 [editable path="tora-nosb"]
+[editable path="Sakurada_Fumiriya"]

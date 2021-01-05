@@ -36,59 +36,58 @@
     ],
     "setup": {
         "model": [0],
-        "head": {
-            "type": "Head",
-            "translation": [0,1.65,0],
-            "near": 0.05,
+        "eyes": {
+            "translation": [0,1.735,-0.07],
+            "near": 0.01,
             "far": 100
         },
         "vr_origin": {
             "translation": [0,0,0],
-            "rotation_degrees": [0,-180,0]
+            "rotation_degrees": [0,0,0]
         },
         "ik": {
             "type": "FABRIK",
             "look_at": [
                 {
                     "name": "VRArmLeft",
-                    "translation": [0,0,0],
-                    "rotation_degrees": [0,0,90],
                     "target_skeleton_from": [0],
-                    "target_bone_name": "j_bip_l_upper_arm",
+                    "bone_name": "j_bip_l_upper_arm",
                     "update_mode": 0,
-                    "look_at_axis": 0,
+                    "look_at_axis": 1,
                     "use_our_rotation_x": false,
                     "use_our_rotation_y": false,
                     "use_our_rotation_z": true,
                     "use_negative_our_rot": false,
-                    "additional_rotation": [270,0,0],
+                    "additional_rotation": [0,270,0],
                     "position_using_additional_bone": false,
                     "additional_bone_name": "",
-                    "additional_bone_length": 1
+                    "additional_bone_length": 1,
+                    "translation": [0,0,0],
+                    "rotation_degrees": [0,0,90]
                 },
                 {
                     "name": "VRArmRight",
-                    "translation": [0,0,0],
-                    "rotation_degrees": [0,0,-90],
                     "target_skeleton_from": [0],
-                    "target_bone_name": "j_bip_r_upper_arm",
+                    "bone_name": "j_bip_r_upper_arm",
                     "update_mode": 0,
-                    "look_at_axis": 0,
+                    "look_at_axis": 1,
                     "use_our_rotation_x": false,
                     "use_our_rotation_y": false,
                     "use_our_rotation_z": true,
                     "use_negative_our_rot": false,
-                    "additional_rotation": [270,0,0],
+                    "additional_rotation": [0,90,0],
                     "position_using_additional_bone": false,
                     "additional_bone_name": "",
-                    "additional_bone_length": 1
+                    "additional_bone_length": 1,
+                    "translation": [0,0,0],
+                    "rotation_degrees": [0,0,-90]
                 },
                 {
                     "name": "VRHead",
                     "translation": [0,0,0],
                     "rotation_degrees": [0,0,0],
                     "target_skeleton_from": [0],
-                    "target_bone_name": "j_bip_c_head",
+                    "bone_name": "j_bip_c_head",
                     "update_mode": 0,
                     "look_at_axis": 1,
                     "use_our_rotation_x": false,
