@@ -1,0 +1,56 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Models/Alicia/alicia.tscn" type="PackedScene" id=1]
+
+[node name="Spatial" type="Spatial"]
+
+[node name="RenIK" type="RenIK" parent="."]
+live_preview = true
+armature_skeleton_path = NodePath("")
+armature_head = "頭"
+armature_left_hand = "手首._l"
+armature_right_hand = "手首._r"
+armature_hip = "上半身"
+armature_left_foot = "足首._l"
+armature_right_foot = "足首._r"
+armature_head_target = NodePath("../TargetHead")
+armature_left_hand_target = NodePath("../TargetHandLeft")
+armature_right_hand_target = NodePath("../TargetHandRight")
+armature_hip_target = NodePath("../TargetHips")
+arm_shoulder_offset = Vector3( -20, 0, 0 )
+arm_pole_offset = Vector3( 0, 0, 0 )
+arm_target_position_influence = Vector3( 0, 0, 0 )
+arm_target_rotation_influence = 0.0
+arm_shoulder_pole_offset = Vector3( 0, 0, 0 )
+leg_lower_leg_twist_offset = 3.9
+leg_pole_offset = Vector3( 0, 0, 0 )
+torso_spine_curve = Vector3( 0, 0, 0 )
+walk_collide_with_bodies = false
+
+[node name="TargetHead" type="CSGSphere" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00254756, 1.50104, 0.132404 )
+radius = 0.05
+
+[node name="TargetHandRight" type="CSGSphere" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.279641, 1.11871, 0.410111 )
+radius = 0.05
+
+[node name="TargetHandLeft" type="CSGSphere" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.530806, 1.19602, -0.00322887 )
+radius = 0.05
+
+[node name="TargetHips" type="CSGSphere" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0136648, 0.826877, -0.00151104 )
+radius = 0.05
+
+[node name="TargetFootLeft" type="CSGSphere" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.99871, -0.0507847, 0, 0.0507847, 0.99871, 0.0758277, 0, 0.0489977 )
+radius = 0.05
+
+[node name="TargetFootRight" type="CSGSphere" parent="."]
+transform = Transform( 0.999478, 0.0323004, 0, -0.0323004, 0.999478, 0, 0, 0, 1, -0.063213, 0.010578, 0.048794 )
+radius = 0.05
+
+[node name="alicia" parent="." instance=ExtResource( 1 )]
+
+[editable path="alicia"]

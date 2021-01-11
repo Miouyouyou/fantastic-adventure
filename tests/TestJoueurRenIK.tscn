@@ -1,12 +1,16 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://FPS.gd" type="Script" id=1]
 [ext_resource path="res://ARVRAndIK.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Models/VRoidStudio/Sakurada_Fumiriya.glb" type="PackedScene" id=3]
+[ext_resource path="res://Models/VRoidStudio/Sakurada_blender_reexport.glb" type="PackedScene" id=3]
 
 [sub_resource type="CapsuleShape" id=1]
 radius = 0.5
-height = 1.04376
+height = 1.5
+
+[sub_resource type="CapsuleMesh" id=2]
+radius = 0.5
+mid_height = 1.5
 
 [sub_resource type="AnimationNodeAnimation" id=3]
 animation = "Idle"
@@ -74,7 +78,6 @@ node_connections = [ "vr_hands_mask", 0, "move", "vr_hands_mask", 1, "Animation 
 
 [node name="Joueur" type="KinematicBody"]
 script = ExtResource( 1 )
-vr_mode = true
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
 transform = Transform( 1, 0, 0, 0, -1.62921e-07, -1, 0, 1, -1.62921e-07, 0, 0, 0 )
@@ -83,14 +86,17 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Sakurada_Fumiriya" parent="CollisionShape" instance=ExtResource( 3 )]
-transform = Transform( 1, 0, 0, 0, -1.62921e-07, 1, 0, -1, -1.62921e-07, 0, 1.47039e-07, 0.902516 )
+[node name="MeshInstance" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, -1.62921e-07, -1, 0, 1, -1.62921e-07, 0, 0, 0 )
+visible = false
+mesh = SubResource( 2 )
+material/0 = null
 
-[node name="Head" type="Spatial" parent="CollisionShape/Sakurada_Fumiriya"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.735, -0.979 )
+[node name="Head" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.067, -0.574 )
 
-[node name="Camera" type="Camera" parent="CollisionShape/Sakurada_Fumiriya/Head"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+[node name="Camera" type="Camera" parent="Head"]
+transform = Transform( -1, 0, -3.25841e-07, -2.03025e-09, 0.999981, 0.00623079, 3.25835e-07, 0.00623079, -0.999981, 0, 0.689598, 0.775747 )
 current = true
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
@@ -100,28 +106,25 @@ parameters/move/blend_position = Vector2( 0, 0 )
 parameters/vr_hands_mask/blend_amount = 0.0
 
 [node name="ARVROrigin" parent="." instance=ExtResource( 2 )]
+transform = Transform( -1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0 )
 
-[node name="IK_LookAt_LeftArm" parent="ARVROrigin/ManetteGauche" index="0"]
-skeleton_path = NodePath("../../../CollisionShape/Sakurada_Fumiriya/Skeleton")
-look_at_axis = 1
-additional_rotation = Vector3( 0, 270, 0 )
-
-[node name="IK_LookAt_RightArm" parent="ARVROrigin/ManetteDroite" index="0"]
-skeleton_path = NodePath("../../../CollisionShape/Sakurada_Fumiriya/Skeleton")
-look_at_axis = 1
-additional_rotation = Vector3( 0, 90, 0 )
+[node name="ARVRCamera" parent="ARVROrigin" index="2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.64103, 0 )
 
 [node name="IK_LookAt_Head" parent="ARVROrigin/ARVRCamera" index="0"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.122 )
 visible = false
-skeleton_path = NodePath("../../../CollisionShape/Sakurada_Fumiriya/Skeleton")
 
 [node name="CSGSphere3" parent="ARVROrigin/ARVRCamera/IK_LookAt_Head" index="0"]
 visible = false
 
+[node name="Sakurada_blender_reexport" parent="ARVROrigin/ARVRCamera" index="1"]
+transform = Transform( -1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, -1.60577, 0.20102 )
+
+[node name="Sakurada_blender_reexport" parent="." instance=ExtResource( 3 )]
+visible = false
+
 [node name="CSGSphere" type="CSGSphere" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.777263, -0.668205 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.950016, 0.989453 )
 radius = 0.1
 
-[editable path="CollisionShape/Sakurada_Fumiriya"]
 [editable path="ARVROrigin"]

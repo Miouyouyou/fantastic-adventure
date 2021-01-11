@@ -18,8 +18,6 @@ onready var arvr_origin = $ARVROrigin
 onready var arvr_camera = $ARVROrigin/ARVRCamera
 onready var animation_tree = $AnimationTree
 
-var vr_interface:ARVRInterface
-
 export(bool) var vr_mode : bool = false
 
 func camera_desktop_disable():
@@ -39,7 +37,7 @@ func setup_vr() -> bool:
 	# We will be using OpenVR to drive the VR interface, so we need to find and initialize it.
 	var VR = ARVRServer.find_interface("OpenXR")
 	if VR and VR.initialize():
-		vr_interface = VR
+		
 		# Turn the main viewport into a AR/VR viewport,
 		# and turn off HDR (which currently does not work)
 		get_viewport().arvr = true
@@ -98,6 +96,8 @@ func _input(event):
 
 
 var frames : int = 0
+var arvr_camera_x_distance:float = 0
+var arvr_camera_z_distance:float = 0
 func _physics_process(delta):
 
 	direction = Vector3()
@@ -112,27 +112,75 @@ func _physics_process(delta):
 	# distance.
 	# This should take care of everything and the kitchen sink in
 	# terms of VR Move.
-	if frames == 60:
+	if frames <= 60:
+		print("Wait... Calibrating")
+	elif frames == 60:
 		var camera_rotation:float = arvr_camera.rotation.y
 		rotate_y(camera_rotation)
 		ARVRServer.center_on_hmd(ARVRServer.RESET_BUT_KEEP_TILT, true)
-		print(arvr_camera.translation)
+		#var offset_for_centering_camera_on_eyes:Vector3 = (
+		#	$ARVROrigin/BetweenEyes.translation
+		#	- $ARVROrigin/ARVRCamera.translation)
+		#print($ARVROrigin/BetweenEyes.translation, " - ", $ARVROrigin/ARVRCamera.translation, " = ", offset_for_centering_camera_on_eyes)
+		#$ARVROrigin.translate(offset_for_centering_camera_on_eyes)
+		#print($ARVROrigin.translation)
 		print("Recentering !")
-	elif frames == 65:
+	elif frames > 60 and frames < 63:
+		print("Waiting for the camera to recenter correctly")
+	elif frames == 64:
 		print("Offseting the origin to center the camera between the eyes")
-		print(arvr_camera.global_transform.origin)
-		print(head.global_transform.origin)
-		
+		print(arvr_camera.translation)
 
-		var camera_position:Vector3 = arvr_camera.global_transform.origin
-		var offset_for_centering_camera_on_eyes:Vector3 = (head.global_transform.origin- camera_position)
-
-		offset_for_centering_camera_on_eyes.x = 0
-		print(offset_for_centering_camera_on_eyes)
+		var camera_position:Vector3 = arvr_camera.translation
+		var offset_for_centering_camera_on_eyes:Vector3 = (head.translation- camera_position)
 		arvr_origin.translate(offset_for_centering_camera_on_eyes)
+		var player_position:Vector3 = translation
+		
+		arvr_camera_x_distance = abs(player_position.x - camera_position.x)
+		arvr_camera_z_distance = abs(player_position.z - camera_position.z)
 		print("Recentered")
+	else:
+		# The whole point is to keep the player centered on the camera, and
+		# avoid freestyle camera move, where the camera move and detach itself
+		# from the character.
+		# That said, moving the Player will move everything, including the
+		# camera, by the same amount, which would not solve the problem, since
+		# we want to pull the camera back to the center.
+		# So we need, as a stupid hack, to move the origin using an opposite
+		# movement.
+		# FIXME : Implement most of this logic using a Collider...
+		# Checking for distances every frame is stupid, the physics engine
+		# can already do it for you, in a more optimized fashion.
+		var player_position:Vector3 = translation
+		var camera_position:Vector3 = arvr_camera.translation
+		var slide:Vector3 = Vector3()
 
+		# ignore Y position. I don't care if the player is jumping, ATM
+		var current_camera_x_distance:float = abs(player_position.x - camera_position.x)
+		var current_camera_z_distance:float = abs(player_position.z - camera_position.z)
+
+		if current_camera_x_distance > arvr_camera_x_distance:
+			
+			var overshoot:float = current_camera_x_distance - arvr_camera_x_distance
+			if camera_position.x > player_position.x:
+				slide.x = overshoot
+			else:
+				slide.x = -overshoot
+		if current_camera_z_distance > arvr_camera_z_distance:
+			print(camera_position)
+			var overshoot:float = current_camera_z_distance - arvr_camera_z_distance
+			#print(current_camera_z_distance, " > ", arvr_camera_z_distance, " (", overshoot, ")")
+			if camera_position.z > player_position.z:
+				slide.z = -overshoot
+			else:
+				slide.z = overshoot
+		# Reposition the camera inside the character
+		arvr_origin.translate(slide)
+		# Move the character so the camera is at the same position
+		#move_and_slide(slide, Vector3.UP)
 	frames += 1
+
+	#var joystick:Vector2 = Vector2()
 
 	if not is_on_floor():
 		fall.y -= gravity * delta
@@ -141,7 +189,8 @@ func _physics_process(delta):
 
 	var move_forward:float = Input.get_action_strength("move_forward")
 	var move_backwards:float = Input.get_action_strength("move_backwards")
-
+	#print("move_forward : " + str(move_forward))
+	#print("move_backwards : " + str(move_backwards))
 	var joy2:Vector2 = Vector2(
 		(Input.get_action_strength("move_right") * 1.0) +
 		(Input.get_action_strength("move_left") * -1.0),
@@ -149,9 +198,31 @@ func _physics_process(delta):
 		+ (Input.get_action_strength("move_backwards") * -1.0))
 
 	var t : Basis = arvr_camera.global_transform.basis # transform.basis
+	#print("\nLocal : " + str($ARVROrigin/ARVRCamera.transform.basis)
+	#	+ "\nGlobal : " + str($ARVROrigin/ARVRCamera.global_transform.basis))
+	#t = t.rotated(t.y, deg2rad(45))
 
 	direction += (t.x) * joy2.x
 	direction += (t.z) * -joy2.y
+
+
+	#if Input.is_action_just_released("vr_turnleft"):
+	#	$ARVROrigin.rotate_y(deg2rad(45/2.0))
+	#if Input.is_action_just_released("vr_turnright"):
+	#	$ARVROrigin.rotate_y(deg2rad(-45/2.0))
+	#if Input.is_action_pressed("move_forward"):
+	#	direction -= transform.basis.z
+	#	joystick.y += 1.0
+	#elif Input.is_action_pressed("move_backwards"):
+	#	direction += transform.basis.z
+	#	joystick.y -= 1.0
+
+	#if Input.is_action_pressed("move_left"):
+	#	direction -= transform.basis.x
+	#	joystick.x -= 1.0
+	#elif Input.is_action_pressed("move_right"):
+	#	direction += transform.basis.x
+	#	joystick.x += 1.0
 
 	animation_tree.set("parameters/move/blend_position", joy2)
 	direction = direction.normalized()
@@ -159,3 +230,11 @@ func _physics_process(delta):
 	velocity = move_and_slide(velocity, Vector3.UP)
 	var _discarded = move_and_slide(fall, Vector3.UP)
 
+	#for axis in range(0,15):
+	#	var axis_value:float = Input.get_joy_axis(0,axis)
+	#	if axis_value != 0.0:
+	#		print("Axis " + str(axis) + " : " + str(axis_value))
+	#for axis in range(0,15):
+	#	var axis_value:float = Input.get_joy_axis(1,axis)
+	#	if axis_value != 0.0:
+	#		print("Axis " + str(axis) + " : " + str(axis_value))

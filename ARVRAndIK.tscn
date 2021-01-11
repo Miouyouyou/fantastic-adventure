@@ -1,6 +1,5 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://Models/VRoidStudio/Sakurada_blender_reexport.glb" type="PackedScene" id=1]
 [ext_resource path="res://addons/sade/ik_look_at.gd" type="Script" id=2]
 
 [sub_resource type="SpatialMaterial" id=1]
@@ -48,7 +47,6 @@ nodes/fragment/connections = PoolIntArray( 2, 0, 0, 0 )
 shader = SubResource( 4 )
 
 [node name="ARVROrigin" type="ARVROrigin"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.811976, 0.219311 )
 
 [node name="ManetteGauche" type="ARVRController" parent="."]
 
@@ -58,12 +56,10 @@ script = ExtResource( 2 )
 __meta__ = {
 "_edit_group_": true
 }
-skeleton_path = NodePath("../../ARVRCamera/Sakurada_blender_reexport/Armature/Skeleton")
 bone_name = "j_bip_l_upper_arm"
 look_at_axis = 0
 use_our_rotation_z = true
 additional_rotation = Vector3( 270, 0, 0 )
-debug_messages = true
 
 [node name="CSGSphere" type="CSGSphere" parent="ManetteGauche/IK_LookAt_LeftArm"]
 material_override = SubResource( 1 )
@@ -78,7 +74,6 @@ script = ExtResource( 2 )
 __meta__ = {
 "_edit_group_": true
 }
-skeleton_path = NodePath("../../ARVRCamera/Sakurada_blender_reexport/Armature/Skeleton")
 bone_name = "j_bip_r_upper_arm"
 look_at_axis = 0
 use_our_rotation_z = true
@@ -95,12 +90,8 @@ script = ExtResource( 2 )
 __meta__ = {
 "_edit_group_": true
 }
-skeleton_path = NodePath("../Sakurada_blender_reexport/Armature/Skeleton")
 bone_name = "j_bip_c_head"
 
 [node name="CSGSphere3" type="CSGSphere" parent="ARVRCamera/IK_LookAt_Head"]
 material_override = SubResource( 5 )
 radius = 0.1
-
-[node name="Sakurada_blender_reexport" parent="ARVRCamera" instance=ExtResource( 1 )]
-transform = Transform( -1, 0, 3.25841e-07, 0, 1, 0, -3.25841e-07, 0, -1, -7.14605e-08, -0.811976, 0.219311 )

@@ -32,8 +32,6 @@ func array_to_vector3(arr:Array) -> Vector3:
 func node_find_skeleton(that_node:Node):
 
 	if that_node is Skeleton:
-		print(that_node)
-		print(that_node.get_path())
 		return that_node
 	else:
 		for child in that_node.get_children():
@@ -43,22 +41,47 @@ func node_find_skeleton(that_node:Node):
 
 	return null
 
-func setup_with_json_config(config_json:String) -> bool:
-	var r = parse_json(config_json)
-	if not r is Dictionary:
-		return false
-	var config : Dictionary = r
-	if not config_check(config):
-		# Blow everything up
-		return false
+var downloading_and_preparing_assets:bool = false
+var assets_to_download_and_prepare:int = 0
 
+var models = []
+var config:Dictionary = {}
+
+func cb_asset_downloaded(
+	result: int,
+	response_code: int,
+	headers: PoolStringArray,
+	body: PoolByteArray,
+	download_id: int,
+	reason: String,
+	extra_arg):
+	if result != OK:
+		# FIXME Handle errors properly
+		# Send a proper error signal... Or retry the download, maybe ?
+		print_debug("Download error. Calling the police, right now !")
+		return
+
+	var prepare_func:FuncRef = extra_arg
+	if prepare_func.call_func(body) == false:
+		# FIXME Handle errors properly
+		print_debug("Failed to prepare a downloaded asset")
+		return
+
+	assets_to_download_and_prepare -= 1
+
+func _physics_process(delta):
+	if downloading_and_preparing_assets and assets_to_download_and_prepare == 0:
+		downloading_and_preparing_assets = false
+		setup_avatar()
+		set_process(false)
+
+func setup_avatar():
 	var vr_origin : ARVROrigin = self
 	var vr_left_arm : ARVRController = $ManetteGauche
 	var vr_right_arm : ARVRController = $ManetteDroite
 	var vr_headset : ARVRCamera = $ARVRCamera
 	var ik_look_at = preload("res://tests/IKLookAtNode.tscn")
 	var model_generator : PackedSceneGLTF = PackedSceneGLTF.new()
-	var models : Array = [model_generator.import_gltf_scene("user://Sakurada_Fumiriya.glb")]
 
 	var setup_config : Dictionary = config["setup"]
 	var vr_origin_config : Dictionary = setup_config["vr_origin"]
@@ -80,7 +103,6 @@ func setup_with_json_config(config_json:String) -> bool:
 		# Do we really want to deal with multiple skeletons ??
 		var target_skeleton_index : int = ik_look_at_config["target_skeleton_from"][0]
 		var targeted_model_skeleton : Node = node_find_skeleton(models[target_skeleton_index])
-		print(targeted_model_skeleton.get_path())
 		var ik_look_at_node = ik_look_at.instance()
 		ik_look_at_node.name = ik_look_at_config["name"]
 		ik_look_at_node.translation = array_to_vector3(ik_look_at_config["translation"])
@@ -108,6 +130,18 @@ func setup_with_json_config(config_json:String) -> bool:
 			_:
 				print("Node added to the Origin, because I don't know where to put it !")
 				vr_origin.add_child(ik_look_at_node)
+
+func setup_with_json_config(config_json:String) -> bool:
+	var r = parse_json(config_json)
+	if not r is Dictionary:
+		return false
+	config = r
+	if not config_check(config):
+		# Blow everything up
+		# FIXME Proper error management
+		return false
+
+
 	return true
 
 
