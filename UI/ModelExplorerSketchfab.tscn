@@ -1,0 +1,115 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://SimpleUITheme.tres" type="Theme" id=1]
+
+[node name="Control" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ContainerUI" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ContainerToolbar" type="HBoxContainer" parent="ContainerUI"]
+margin_right = 1024.0
+margin_bottom = 29.0
+size_flags_horizontal = 3
+
+[node name="ButtonFilters" type="Button" parent="ContainerUI/ContainerToolbar"]
+margin_right = 62.0
+margin_bottom = 29.0
+text = "Filters"
+
+[node name="TextSearch" type="LineEdit" parent="ContainerUI/ContainerToolbar"]
+margin_left = 66.0
+margin_right = 956.0
+margin_bottom = 29.0
+size_flags_horizontal = 3
+align = 1
+placeholder_text = "Search word"
+
+[node name="ButtonSearch" type="Button" parent="ContainerUI/ContainerToolbar"]
+margin_left = 960.0
+margin_right = 1024.0
+margin_bottom = 29.0
+text = "Search"
+
+[node name="ContainerSearchResults" type="HBoxContainer" parent="ContainerUI"]
+margin_top = 33.0
+margin_right = 1024.0
+margin_bottom = 600.0
+size_flags_vertical = 3
+
+[node name="ScrollSearchResults" type="ScrollContainer" parent="ContainerUI/ContainerSearchResults"]
+margin_right = 720.0
+margin_bottom = 567.0
+size_flags_horizontal = 3
+scroll_horizontal_enabled = false
+
+[node name="ListResults" type="ItemList" parent="ContainerUI/ContainerSearchResults/ScrollSearchResults"]
+margin_right = 720.0
+margin_bottom = 567.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ScrollDetails" type="ScrollContainer" parent="ContainerUI/ContainerSearchResults"]
+margin_left = 724.0
+margin_right = 1024.0
+margin_bottom = 567.0
+rect_min_size = Vector2( 300, 0 )
+
+[node name="ContainerDetails" type="VBoxContainer" parent="ContainerUI/ContainerSearchResults/ScrollDetails"]
+margin_right = 300.0
+margin_bottom = 567.0
+size_flags_vertical = 3
+
+[node name="ContainerDetails3DView" type="ViewportContainer" parent="ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails"]
+margin_right = 300.0
+margin_bottom = 300.0
+rect_min_size = Vector2( 300, 300 )
+
+[node name="Viewport3DView" type="Viewport" parent="ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/ContainerDetails3DView"]
+size = Vector2( 300, 300 )
+
+[node name="LabelDetailsName" type="Label" parent="ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails"]
+margin_top = 304.0
+margin_right = 300.0
+margin_bottom = 323.0
+text = "Name"
+
+[node name="LabelDetailsSize" type="Label" parent="ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails"]
+margin_top = 327.0
+margin_right = 300.0
+margin_bottom = 346.0
+text = "1024.99 MiBi"
+
+[node name="LabelDetailsPolycount" type="Label" parent="ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails"]
+margin_top = 350.0
+margin_right = 300.0
+margin_bottom = 369.0
+text = "1,785,234 Polygons"
+
+[node name="LabelDetailsLicence" type="Label" parent="ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails"]
+margin_top = 373.0
+margin_right = 300.0
+margin_bottom = 392.0
+text = "CC-BY"
+
+[node name="LabelDetailsAuthor" type="Label" parent="ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails"]
+margin_top = 396.0
+margin_right = 300.0
+margin_bottom = 415.0
+text = "Pouiposaurus"
+
+[node name="LabelDetailsDescription" type="Label" parent="ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails"]
+margin_top = 419.0
+margin_right = 300.0
+margin_bottom = 438.0
+text = "Description"
