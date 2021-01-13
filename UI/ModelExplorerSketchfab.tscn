@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://SimpleUITheme.tres" type="Theme" id=1]
+[ext_resource path="res://UI/3DPreview.tscn" type="PackedScene" id=2]
 
 [node name="Control" type="Control"]
 anchor_right = 1.0
@@ -75,8 +76,7 @@ margin_right = 300.0
 margin_bottom = 300.0
 rect_min_size = Vector2( 300, 300 )
 
-[node name="Viewport3DView" type="Viewport" parent="ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/ContainerDetails3DView"]
-size = Vector2( 300, 300 )
+[node name="Control" parent="ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/ContainerDetails3DView" instance=ExtResource( 2 )]
 
 [node name="LabelDetailsName" type="Label" parent="ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails"]
 margin_top = 304.0
