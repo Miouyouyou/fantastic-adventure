@@ -25,20 +25,37 @@ const HTTPCLIENT_STATUS_MAPPINGS = [
 	DOWNLOAD_FAILED_SSL_ISSUE             # STATUS_SSL_HANDSHAKE_ERROR
 ]
 
-signal download_ended(result,response_code,headers,body, download_id, reason, extra_arg)
-# request_completed(result: int, response_code: int, headers: PoolStringArray, body: PoolByteArray)
-
-func download_ended_dispatcher(result: int, response_code: int, headers: PoolStringArray, body: PoolByteArray, download_id: int, reason: String, extra_arg):
-	emit_signal("download_ended", result, response_code, headers, body, download_id, reason, extra_arg)
-
 func is_download_status_error(status_code:int):
 	return status_code > 0
 
-func download(reason: String, url: String, extra_arg) -> int:
+func get_request(reason: String, endpoint_url: String, callback_object, callback:String, extra_arg=null) -> int:
+	var http_request:HTTPRequest = HTTPRequest.new()
+	var get_id:int = http_request.get_instance_id()
+	http_request.connect(
+		"request_completed",
+		callback_object, callback, [get_id, reason, extra_arg])
+	add_child(http_request)
+	http_request.request(endpoint_url)
+	return get_id
+
+func post_form(reason: String, endpoint_url: String, form_data: Dictionary, callback_object, callback: String, extra_arg = null) -> int:
+	var http_request:HTTPRequest = HTTPRequest.new()
+	var post_id:int = http_request.get_instance_id()
+	http_request.connect(
+		"request_completed", callback_object, callback, [post_id, reason, extra_arg])
+	add_child(http_request)
+	var headers:PoolStringArray = PoolStringArray()
+	headers.append("Content-Type: application/x-www-form-urlencoded")
+	var post_data = HTTPClient.new().query_string_from_dict(form_data)
+	http_request.request(
+		endpoint_url, headers, true, HTTPClient.METHOD_POST, post_data)
+	return post_id
+
+func download(reason: String, url: String, callback: String, extra_arg) -> int:
 	var http_request:HTTPRequest = HTTPRequest.new()
 	var download_id:int = http_request.get_instance_id()
 	http_request.connect(
-		"request_completed", self, "download_ended_dispatcher",
+		"request_completed", self, callback,
 		[download_id, reason, extra_arg])
 	add_child(http_request)
 	http_request.request(url)
@@ -62,4 +79,11 @@ func download_progress(instance_id:int) -> Array:
 	if not request is HTTPRequest:
 		return [DOWNLOAD_ID_INVALID,-1,-1]
 	return _download_progress_hr(request)
+
+func remove_ref(instance_id:int) -> void:
+	var alleged_request:Object = instance_from_id(instance_id)
+	for child in get_children():
+		if child == alleged_request:
+			alleged_request.queue_free()
+			remove_child(child)
 
