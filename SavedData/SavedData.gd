@@ -4,12 +4,30 @@ extends Node
 var saved_data : Dictionary = {}
 const SAVE_PATH = "user://userprefs.json"
 
+const player_defaults = {"username": "Unnamed hamster", "vr": false}
+const system_defaults = {}
+
 func _ready():
 	load_data()
 
 func fill_with_defaults(save:Dictionary):
 	save["system"] = {}
 	save["player"] = {"username": "Unnamed hamster", "vr": false}
+
+func save_data_fill_missing_keys(save:Dictionary):
+	for main_k in ["system", "player"]:
+		if not save.has(main_k):
+			save[main_k] = {}
+
+	var save_system : Dictionary = save["system"]
+	for k in system_defaults:
+		if not save_system.has(k):
+			save_system[k] = system_defaults[k]
+
+	var save_player : Dictionary = save["player"]
+	for k in player_defaults:
+		if not save_player.has(k):
+			save_player[k] = player_defaults[k]
 
 func save_data_using(new_save_data):
 	# TODO Make a backup of the old save, just in case
@@ -47,6 +65,8 @@ func load_data():
 	saved_data = parse_json(f.get_as_text())
 	f.close()
 	data_loaded = (saved_data is Dictionary)
+	if data_loaded:
+		save_data_fill_missing_keys(saved_data)
 	# TODO else we're dealing with corrupted save data
 	# Provide some clue to the user
 	return data_loaded

@@ -9,6 +9,8 @@ func _ready():
 	textbox_name = $VBoxContainer/CenterContainer/VBoxContainer/GridContainer/TextEditName
 	checkbox_vr = $VBoxContainer/CenterContainer/VBoxContainer/CheckBoxVR
 	var player_data : Dictionary = SavedData.player_data()
+	# FIXME Be sure to migrate all save data to new ones, filling up the
+	# blanks if necessary
 	textbox_name.set_text(player_data["username"])
 	checkbox_vr.set_pressed(player_data["vr"])
 	textbox_ip.text = Network.DEFAULT_IP
@@ -17,7 +19,6 @@ func _on_ButtonHost_pressed():
 	Network.create_server()
 	create_rooms_list()
 	pass # Replace with function body.
-
 
 func _on_ButtonJoin_pressed():
 	# Clunky... Why not pass this to the Network class
@@ -28,7 +29,6 @@ func _on_ButtonJoin_pressed():
 	Network.connect_server()
 	#create_rooms_list()
 	pass # Replace with function body.
-
 
 func _on_TextEditName_text_changed(_new_text):
 	# TODO Use functions to access the players data
@@ -42,7 +42,6 @@ func create_rooms_list():
 	if get_tree().change_scene("res://Test3D.tscn") != OK:
 		printerr("Could not load the main scene :C")
 	pass
-
 
 func _on_CheckBoxVR_toggled(button_pressed):
 	SavedData.saved_data["player"]["vr"] = button_pressed
