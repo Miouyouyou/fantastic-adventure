@@ -78,10 +78,7 @@ func sketchfab_list_models(search_criterias:Dictionary):
 func display_model_list(list:Dictionary):
 	var first_result : Dictionary = list["results"][0]
 	print(first_result.keys())
-	print(first_result["uri"])
-	print(first_result["uid"])
-	print(first_result["name"])
-	print(first_result["thumbnails"])
+	print(first_result["likeCount"])
 
 	for result in list["results"]:
 		for thumbnail_data in result["thumbnails"]["images"]:
@@ -109,5 +106,7 @@ func _ready():
 		"license": "by",
 		"downloadable": true,
 		"max_face_count": 20000,
-		"categories": ["characters-creatures"]
+		"categories": ["characters-creatures"],
+		"sort_by": "-likeCount",
+		"max_filesizes": "gltf:10000000"
 		})
