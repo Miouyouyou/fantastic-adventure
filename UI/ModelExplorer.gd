@@ -7,8 +7,27 @@ signal sketchfab_login_error(error_code, error_message)
 
 var thumbnail_object = preload("res://UI/ModelThumbnail.tscn")
 
+const sketchfab_api_host : String = "https://sketchfab.com"
+const sketchfab_api_prefix : String = "https://sketchfab.com/v3"
+
+func auth_call(reason, endpoint, form_data, callback_obj, callback):
+	var url : String = sketchfab_api_prefix + endpoint
+	var headers : PoolStringArray = PoolStringArray()
+	headers.append("Authorization: Bearer " + get_meta("access_token"))
+	# endpoint_url: String, form_data: Dictionary, callback_object, callback: String, headers: PoolStringArray = PoolStringArray(), extra_arg = null) -> int:
+	DownloadManager.post_json(
+		reason, endpoint, form_data, callback_obj, callback, headers)
+
 func cb_test_login_success(credentials:Dictionary):
 	print(credentials)
+	set_meta("access_token", credentials["access_token"])
+	sketchfab_list_models({
+		"license": "by",
+		"downloadable": true,
+		"max_face_count": 20000,
+		"categories": ["characters-creatures"],
+		"sort_by": "-likeCount",
+		"max_filesizes": "gltf:10000000" })
 
 func cb_login_request(result: int, response_code: int, headers: PoolStringArray, body: PoolByteArray, download_id: int, reason: String, extra_arg):
 	print(result)
@@ -40,6 +59,24 @@ func cb_got_models(result: int, response_code: int, headers: PoolStringArray, bo
 		# FIXME : The API actually provide accurate information
 		# Relay these info here
 		emit_signal("sketchfab_login_error", response_code, "An error occured")
+
+func cb_sketchfab_thumbnail_click(args):
+	var sketchfab_model_info : Dictionary = args[0]
+	print(sketchfab_model_info)
+	set_select_description_sketchfab(sketchfab_model_info)
+
+func set_select_description_sketchfab(sketchfab_model_info:Dictionary):
+	$ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsName.text = sketchfab_model_info["name"]
+	$ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsAuthor.text = sketchfab_model_info["user"]["displayName"]
+	$ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsPolycount.text = str(sketchfab_model_info["faceCount"])
+	$ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsLicence.text = "cc-by"
+	var size : float = -1
+	if sketchfab_model_info["archives"].has("gltf"):
+		size = sketchfab_model_info["archives"]["gltf"].get("size", -1)
+	$ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsSize.text = str(size)
+	$ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsDescription.text = sketchfab_model_info["description"]
+	# FIXME This can lead to the previous slow request replacing the next fast one
+	# auth_call(get_model_and_display_it)
 
 func login_sketchfab(login_details:Dictionary) -> void:
 	var host:String = "https://sketchfab.com"
@@ -76,37 +113,28 @@ func sketchfab_list_models(search_criterias:Dictionary):
 		"Getting CC-BY models", url, self, "cb_got_models")
 
 func display_model_list(list:Dictionary):
-	var first_result : Dictionary = list["results"][0]
-	print(first_result.keys())
-	print(first_result["likeCount"])
+	# print(list["results"][0].keys())
 
 	for result in list["results"]:
 		for thumbnail_data in result["thumbnails"]["images"]:
-			print(thumbnail_data)
+			# print(thumbnail_data)
 			if thumbnail_data["width"] == 256:
 				var thumbnail = thumbnail_object.instance()
 				thumbnail.set_thumbnail_with_url(thumbnail_data["url"], result["name"])
+				thumbnail.set_click_handler(self, "cb_sketchfab_thumbnail_click", [result])
 				$ContainerUI/ContainerSearchResults/ScrollSearchResults/ListResults.add_child(thumbnail)
 	return
 
 func _ready():
 	connect("sketchfab_login_success", self, "cb_test_login_success")
-	# Until I create the login UI
-	#var secrets_filepath = "/tmp/sketchfab.json"
 
-	#if credentials_load_cached("/tmp/sketchfab_token.json"):
-	#	print("Success !")
-	#else:
-	#	var parsed_data = parse_json(FileHelpers.read_text(secrets_filepath))
-	#	if parsed_data is Dictionary:
-	#		login_sketchfab(parsed_data)
-	#	else:
-	#		print("Could not open ", secrets_filepath)
-	sketchfab_list_models({
-		"license": "by",
-		"downloadable": true,
-		"max_face_count": 20000,
-		"categories": ["characters-creatures"],
-		"sort_by": "-likeCount",
-		"max_filesizes": "gltf:10000000"
-		})
+	# Until I create the login UI
+	if credentials_load_cached("/tmp/sketchfab_token.json"):
+		print("Success !")
+	else:
+		var secrets_filepath = "/tmp/sketchfab.json"
+		var parsed_data = parse_json(FileHelpers.read_text(secrets_filepath))
+		if parsed_data is Dictionary:
+			login_sketchfab(parsed_data)
+		else:
+			print("Could not open ", secrets_filepath)

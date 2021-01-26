@@ -51,6 +51,17 @@ func post_form(reason: String, endpoint_url: String, form_data: Dictionary, call
 		endpoint_url, headers, true, HTTPClient.METHOD_POST, post_data)
 	return post_id
 
+func post_json(reason: String, endpoint_url: String, form_data: Dictionary, callback_object, callback: String, headers: PoolStringArray = PoolStringArray(), extra_arg = null) -> int:
+	# FIXME Factorize this, seriously
+	var http_request:HTTPRequest = HTTPRequest.new()
+	var post_id:int = http_request.get_instance_id()
+	http_request.connect(
+		"request_completed", callback_object, callback, [post_id, reason, extra_arg])
+	add_child(http_request)
+	http_request.request(
+		endpoint_url, headers, true, HTTPClient.METHOD_POST, to_json(form_data))
+	return post_id
+
 func download(reason: String, url: String, callback: String, extra_arg) -> int:
 	var http_request:HTTPRequest = HTTPRequest.new()
 	var download_id:int = http_request.get_instance_id()

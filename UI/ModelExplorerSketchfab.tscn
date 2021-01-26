@@ -126,3 +126,4 @@ margin_top = 419.0
 margin_right = 300.0
 margin_bottom = 438.0
 text = "Description"
+autowrap = true
