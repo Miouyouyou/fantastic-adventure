@@ -28,14 +28,25 @@ const HTTPCLIENT_STATUS_MAPPINGS = [
 func is_download_status_error(status_code:int):
 	return status_code > 0
 
-func get_request(reason: String, endpoint_url: String, callback_object, callback:String, extra_arg=null) -> int:
+func get_request(reason: String, endpoint_url: String, callback_object, callback:String, extra_arg=null, headers : PoolStringArray = PoolStringArray()) -> int:
 	var http_request:HTTPRequest = HTTPRequest.new()
 	var get_id:int = http_request.get_instance_id()
 	http_request.connect(
 		"request_completed",
 		callback_object, callback, [get_id, reason, extra_arg])
 	add_child(http_request)
-	http_request.request(endpoint_url)
+	http_request.request(endpoint_url, headers)
+	return get_id
+
+func download_to_file(reason: String, endpoint_url: String, download_filename:String, callback_object, callback:String, extra_arg=null, headers : PoolStringArray = PoolStringArray()) -> int:
+	var http_request:HTTPRequest = HTTPRequest.new()
+	var get_id:int = http_request.get_instance_id()
+	http_request.download_file = download_filename
+	http_request.connect(
+		"request_completed",
+		callback_object, callback, [get_id, reason, download_filename, extra_arg])
+	add_child(http_request)
+	http_request.request(endpoint_url, headers)
 	return get_id
 
 func post_form(reason: String, endpoint_url: String, form_data: Dictionary, callback_object, callback: String, extra_arg = null) -> int:

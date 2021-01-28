@@ -8,10 +8,19 @@ signal sketchfab_login_error(error_code, error_message)
 var thumbnail_object = preload("res://UI/ModelThumbnail.tscn")
 
 const sketchfab_api_host : String = "https://sketchfab.com"
-const sketchfab_api_prefix : String = "https://sketchfab.com/v3"
 
-func auth_call(reason, endpoint, form_data, callback_obj, callback):
-	var url : String = sketchfab_api_prefix + endpoint
+# FIXME Factorize
+# reason: String, endpoint_url: String, callback_object, callback:String, extra_arg=null) -> int:
+func auth_call_get(reason:String, endpoint:String, callback_obj, callback:String):
+	var url : String = sketchfab_api_host + endpoint
+	var headers : PoolStringArray = PoolStringArray()
+	headers.append("Authorization: Bearer " + get_meta("access_token"))
+	print(url)
+	DownloadManager.get_request(
+		reason, url, callback_obj, callback, null, headers)
+
+func auth_call_post(reason, endpoint, form_data, callback_obj, callback):
+	var url : String = sketchfab_api_host + endpoint
 	var headers : PoolStringArray = PoolStringArray()
 	headers.append("Authorization: Bearer " + get_meta("access_token"))
 	# endpoint_url: String, form_data: Dictionary, callback_object, callback: String, headers: PoolStringArray = PoolStringArray(), extra_arg = null) -> int:
@@ -47,6 +56,9 @@ func cb_login_request(result: int, response_code: int, headers: PoolStringArray,
 		# Relay these info here
 		emit_signal("sketchfab_login_error", response_code, "An error occured")
 
+func http_ok(result:int, response_code:int) -> bool:
+	return (result == OK and response_code == 200)
+
 func cb_got_models(result: int, response_code: int, headers: PoolStringArray, body: PoolByteArray, download_id: int, reason: String, extra_arg):
 	DownloadManager.remove_ref(download_id)
 	if result == OK and response_code == 200:
@@ -65,6 +77,24 @@ func cb_sketchfab_thumbnail_click(args):
 	print(sketchfab_model_info)
 	set_select_description_sketchfab(sketchfab_model_info)
 
+func cb_model_downloaded(result: int, response_code: int, headers: PoolStringArray, body: PoolByteArray, download_id: int, reason: String, download_filename:String, extra_arg):
+	if http_ok(result, response_code):
+		var scene_importer = PackedSceneGLTF.new()
+		var node = scene_importer.import_gltf_scene("/tmp/scene.gltf")
+		if node is Node:
+			$"ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/ContainerDetails3DView/Control/Spatial".set_model(node)
+
+func cb_model_download_url_obtained(result: int, response_code: int, headers: PoolStringArray, body: PoolByteArray, download_id: int, reason: String, extra_arg):
+	print(result)
+	print(response_code)
+	if http_ok(result, response_code):
+		var info = parse_json(body.get_string_from_utf8())
+		if info is Dictionary:
+			# FIXME Implement download_to_file
+			DownloadManager.download_to_file("Download model", info["gltf"]["url"], "/tmp/test_model.zip", self, "cb_model_downloaded")
+
+
+
 func set_select_description_sketchfab(sketchfab_model_info:Dictionary):
 	$ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsName.text = sketchfab_model_info["name"]
 	$ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsAuthor.text = sketchfab_model_info["user"]["displayName"]
@@ -77,6 +107,8 @@ func set_select_description_sketchfab(sketchfab_model_info:Dictionary):
 	$ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsDescription.text = sketchfab_model_info["description"]
 	# FIXME This can lead to the previous slow request replacing the next fast one
 	# auth_call(get_model_and_display_it)
+	auth_call_get("Download the model", "/v3/models/" + sketchfab_model_info["uid"] + "/download", self, "cb_model_download_url_obtained")
+	print(sketchfab_model_info.keys())
 
 func login_sketchfab(login_details:Dictionary) -> void:
 	var host:String = "https://sketchfab.com"

@@ -127,3 +127,5 @@ margin_right = 300.0
 margin_bottom = 438.0
 text = "Description"
 autowrap = true
+
+[editable path="ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/ContainerDetails3DView/Control"]
