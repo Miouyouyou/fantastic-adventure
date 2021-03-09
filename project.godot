@@ -41,7 +41,6 @@ mix_rate=48000
 Network="*res://Network/Network.gd"
 SavedData="*res://SavedData/SavedData.gd"
 DownloadManager="*res://Network/DownloadManager.gd"
-FileHelpers="*res://helpers/file_helpers.gd"
 
 [editor_plugins]
 
