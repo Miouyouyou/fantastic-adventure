@@ -9,6 +9,14 @@ var thumbnail_object = preload("res://UI/ModelThumbnail.tscn")
 
 const sketchfab_api_host : String = "https://sketchfab.com"
 
+onready var ui_label_model_name = $ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsName
+onready var ui_label_model_author = $ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsAuthor
+onready var ui_label_model_polycount = $ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsPolycount
+onready var ui_label_model_licence = $ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsLicence
+onready var ui_label_model_size = $ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsSize
+onready var ui_label_model_description = $ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsDescription
+onready var ui_model_preview = $"ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/ContainerDetails3DView/Control/Spatial"
+
 # FIXME Factorize
 # reason: String, endpoint_url: String, callback_object, callback:String, extra_arg=null) -> int:
 func auth_call_get(reason:String, endpoint:String, callback_obj, callback:String):
@@ -79,10 +87,21 @@ func cb_sketchfab_thumbnail_click(args):
 
 func cb_model_downloaded(result: int, response_code: int, headers: PoolStringArray, body: PoolByteArray, download_id: int, reason: String, download_filename:String, extra_arg):
 	if http_ok(result, response_code):
-		var scene_importer = PackedSceneGLTF.new()
-		var node = scene_importer.import_gltf_scene("/tmp/scene.gltf")
-		if node is Node:
-			$"ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/ContainerDetails3DView/Control/Spatial".set_model(node)
+		var z:ZIPReader = ZIPReader.new()
+		z.open(download_filename)
+		var zipped_files:PoolStringArray = z.get_files()
+		z.close()
+		for zipped_file in zipped_files:
+			if zipped_file.ends_with(".gltf"):
+				var handler:GLTFHelpers.ZipFileHandler = GLTFHelpers.ZipFileHandler.new()
+				handler.open_zip_file(download_filename)
+				if GLTFHelpers.convert_gltf_to_glb(zipped_file, "user://downloaded.glb", handler) != OK:
+					print_debug("Could not convert the archive...")
+					return
+				var scene_importer:PackedSceneGLTF = PackedSceneGLTF.new()
+				var node = scene_importer.import_gltf_scene("user://downloaded.glb")
+				if node is Node:
+					ui_model_preview.set_model(node)
 
 func cb_model_download_url_obtained(result: int, response_code: int, headers: PoolStringArray, body: PoolByteArray, download_id: int, reason: String, extra_arg):
 	print(result)
@@ -91,20 +110,19 @@ func cb_model_download_url_obtained(result: int, response_code: int, headers: Po
 		var info = parse_json(body.get_string_from_utf8())
 		if info is Dictionary:
 			# FIXME Implement download_to_file
-			DownloadManager.download_to_file("Download model", info["gltf"]["url"], "/tmp/test_model.zip", self, "cb_model_downloaded")
-
+			DownloadManager.download_to_file("Download model", info["gltf"]["url"], "user://test_model.zip", self, "cb_model_downloaded")
 
 
 func set_select_description_sketchfab(sketchfab_model_info:Dictionary):
-	$ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsName.text = sketchfab_model_info["name"]
-	$ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsAuthor.text = sketchfab_model_info["user"]["displayName"]
-	$ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsPolycount.text = str(sketchfab_model_info["faceCount"])
-	$ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsLicence.text = "cc-by"
+	ui_label_model_name.text = sketchfab_model_info["name"]
+	ui_label_model_author.text = sketchfab_model_info["user"]["displayName"]
+	ui_label_model_polycount.text = str(sketchfab_model_info["faceCount"])
+	ui_label_model_licence.text = "CC Attribution"
 	var size : float = -1
 	if sketchfab_model_info["archives"].has("gltf"):
 		size = sketchfab_model_info["archives"]["gltf"].get("size", -1)
-	$ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsSize.text = str(size)
-	$ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsDescription.text = sketchfab_model_info["description"]
+	ui_label_model_size.text = str(size)
+	ui_label_model_description.text = sketchfab_model_info["description"]
 	# FIXME This can lead to the previous slow request replacing the next fast one
 	# auth_call(get_model_and_display_it)
 	auth_call_get("Download the model", "/v3/models/" + sketchfab_model_info["uid"] + "/download", self, "cb_model_download_url_obtained")
@@ -161,10 +179,10 @@ func _ready():
 	connect("sketchfab_login_success", self, "cb_test_login_success")
 
 	# Until I create the login UI
-	if credentials_load_cached("/tmp/sketchfab_token.json"):
+	if credentials_load_cached("user://sketchfab_token.json"):
 		print("Success !")
 	else:
-		var secrets_filepath = "/tmp/sketchfab.json"
+		var secrets_filepath = "user://sketchfab.json"
 		var parsed_data = parse_json(FileHelpers.read_text(secrets_filepath))
 		if parsed_data is Dictionary:
 			login_sketchfab(parsed_data)

@@ -84,16 +84,27 @@ func _ready():
 	else:
 		print("WTF !??")
 
-func align_buffer_on_4_bytes(buffer:PoolByteArray):
+static func align_buffer_on_4_bytes(buffer:PoolByteArray):
 	var buffer_size:int = buffer.size()
 	for i in range(0, buffer_size & 3):
 		buffer.append(0)
 
-func convert_gltf_to_glb(gltf_filepath:String, glb_out_filepath:String, in_file_handler = StandardFileHandler.new()):
+static func guess_mimetype(filepath:String) -> String:
+	var mimetype:String = ""
+	match filepath.get_extension():
+		".png":
+			mimetype = "image/png"
+		".jpg", ".jpeg":
+			mimetype = "image/jpg"
+		_:
+			mimetype = "application/octet-stream"
+	return mimetype
+
+static func convert_gltf_to_glb(gltf_filepath:String, glb_out_filepath:String, in_file_handler = StandardFileHandler.new()) -> int:
 	var gltf_read:StatusAndString = in_file_handler.read_file_as_string(gltf_filepath, File.READ)
 	if gltf_read.status != OK:
 		print_debug("Error " + str(gltf_read.status) + " while trying to open " + gltf_filepath)
-		return
+		return gltf_read.status
 
 	var parse_result:JSONParseResult = JSON.parse(gltf_read.data)
 	if parse_result.error != OK:
@@ -101,12 +112,12 @@ func convert_gltf_to_glb(gltf_filepath:String, glb_out_filepath:String, in_file_
 		print_debug("Error :")
 		print_debug(parse_result.error_string)
 		print_debug("At line : " + str(parse_result.error_line))
-		return
+		return parse_result.error
 
 	if not parse_result.result is Dictionary:
 		print_debug("... ? Expected a JSON Dictionary as the GLTF file.")
 		print_debug("Got a " + str(typeof(parse_result.result)) + " instead.")
-		return
+		return ERR_INVALID_DATA
 
 	var gltf:Dictionary = parse_result.result
 	var gltf_dirpath:String = gltf_filepath.get_base_dir() + "/"
@@ -143,6 +154,7 @@ func convert_gltf_to_glb(gltf_filepath:String, glb_out_filepath:String, in_file_
 				else:
 					print_debug("Could not read " + buffer_filepath)
 					print_debug("Reason " + str(buffer_read.status))
+					return ERR_FILE_CANT_READ
 			else:
 				# We're dealing with embedded data.
 				# We only deal with base64 encoding at the moment
@@ -168,33 +180,39 @@ func convert_gltf_to_glb(gltf_filepath:String, glb_out_filepath:String, in_file_
 	# Now we add the images into the main buffer, create new bufferViews to
 	# reference them and link the images references to these bufferViews
 	var buffer_view_i = gltf["bufferViews"].size()
-	for image_desc in gltf["images"]:
-		# If the image has not URI, it probably refers to a bufferView
-		# in which case, we don't need to touch it, since we already
-		# updated the previously defined bufferViews.
-		# FIXME We could still fail if uri and bufferView are missing,
-		# just in case...
-		if image_desc.has("uri"):
-			var image_filepath:String = gltf_dirpath + str(image_desc["uri"])
-			var image_read:StatusAndData = in_file_handler.read_file(image_filepath, File.READ)
-			if image_read.status == OK:
-				var image_file_size:int = image_read.data.size()
-				# Let's be optimistic and store the new image bufferView before
-				# actually storing the image data into the GLB buffer
-				var image_buffer_view = {
-					"buffer": 0,
-					"byteLength": image_file_size,
-					"byteOffset": glb_buffer.size()
-				}
-				gltf["bufferViews"].append(image_buffer_view)
-				glb_buffer.append_array(image_read.data)
-				align_buffer_on_4_bytes(glb_buffer)
-				image_desc.erase("uri")
-				image_desc["bufferView"] = buffer_view_i
-				buffer_view_i += 1
-			else:
-				print_debug("Could not read " + image_filepath)
-				print_debug("Reason " + str(image_read.status))
+	if gltf.has("images"):
+		for image_desc in gltf["images"]:
+			# If the image has not URI, it probably refers to a bufferView
+			# in which case, we don't need to touch it, since we already
+			# updated the previously defined bufferViews.
+			# FIXME We could still fail if uri and bufferView are missing,
+			# just in case...
+			if image_desc.has("uri"):
+				var image_filepath:String = gltf_dirpath + str(image_desc["uri"])
+				var image_read:StatusAndData = in_file_handler.read_file(image_filepath, File.READ)
+				if image_read.status == OK:
+					var image_file_size:int = image_read.data.size()
+					# Let's be optimistic and store the new image bufferView before
+					# actually storing the image data into the GLB buffer
+					var image_buffer_view = {
+						"buffer": 0,
+						"byteLength": image_file_size,
+						"byteOffset": glb_buffer.size()
+					}
+					gltf["bufferViews"].append(image_buffer_view)
+					glb_buffer.append_array(image_read.data)
+					align_buffer_on_4_bytes(glb_buffer)
+					image_desc.erase("uri")
+					image_desc["bufferView"] = buffer_view_i
+					if not image_desc.has("mimeType"):
+						# Because why put the filetype when you can just avoid
+						# it !
+						image_desc["mimeType"] = guess_mimetype(image_filepath)
+					buffer_view_i += 1
+				else:
+					print_debug("Could not read " + image_filepath)
+					print_debug("Reason " + str(image_read.status))
+					return ERR_FILE_CANT_READ
 
 	# Now that everything is converted and stored, generate the GLB buffer
 	# description.
@@ -237,3 +255,4 @@ func convert_gltf_to_glb(gltf_filepath:String, glb_out_filepath:String, in_file_
 	glb_file.seek(8) # magic (uint32) -> 4 bytes + version (uint32) -> 4 bytes
 	glb_file.store_32(glb_file_actual_size)
 	glb_file.close()
+	return OK
