@@ -8,69 +8,69 @@
 radius = 0.5
 height = 1.04376
 
-[sub_resource type="AnimationNodeAnimation" id=3]
+[sub_resource type="AnimationNodeAnimation" id=2]
 animation = "Idle"
+
+[sub_resource type="AnimationNodeAnimation" id=3]
+animation = "Walk"
 
 [sub_resource type="AnimationNodeAnimation" id=4]
 animation = "Walk"
 
 [sub_resource type="AnimationNodeAnimation" id=5]
-animation = "Walk"
-
-[sub_resource type="AnimationNodeAnimation" id=6]
 animation = "WalkBack"
 
-[sub_resource type="AnimationNodeBlendSpace1D" id=7]
-blend_point_0/node = SubResource( 5 )
+[sub_resource type="AnimationNodeBlendSpace1D" id=6]
+blend_point_0/node = SubResource( 4 )
 blend_point_0/pos = 1.0
-blend_point_1/node = SubResource( 6 )
+blend_point_1/node = SubResource( 5 )
 blend_point_1/pos = -1.0
 
-[sub_resource type="AnimationNodeAnimation" id=8]
+[sub_resource type="AnimationNodeAnimation" id=7]
 animation = "Walk"
 
-[sub_resource type="AnimationNodeAnimation" id=9]
+[sub_resource type="AnimationNodeAnimation" id=8]
 animation = "WalkBack"
 
-[sub_resource type="AnimationNodeAnimation" id=10]
+[sub_resource type="AnimationNodeAnimation" id=9]
 animation = "WalkStrafeLeft"
 
-[sub_resource type="AnimationNodeAnimation" id=11]
+[sub_resource type="AnimationNodeAnimation" id=10]
 animation = "WalkStrafeRight"
 
-[sub_resource type="AnimationNodeAnimation" id=12]
+[sub_resource type="AnimationNodeAnimation" id=11]
 animation = "Idle"
 
-[sub_resource type="AnimationNodeBlendSpace2D" id=13]
-blend_point_0/node = SubResource( 8 )
+[sub_resource type="AnimationNodeBlendSpace2D" id=12]
+blend_point_0/node = SubResource( 7 )
 blend_point_0/pos = Vector2( 0, 1 )
-blend_point_1/node = SubResource( 9 )
+blend_point_1/node = SubResource( 8 )
 blend_point_1/pos = Vector2( 0, -1 )
-blend_point_2/node = SubResource( 10 )
+blend_point_2/node = SubResource( 9 )
 blend_point_2/pos = Vector2( -1, 0 )
-blend_point_3/node = SubResource( 11 )
+blend_point_3/node = SubResource( 10 )
 blend_point_3/pos = Vector2( 1, 0 )
-blend_point_4/node = SubResource( 12 )
+blend_point_4/node = SubResource( 11 )
 blend_point_4/pos = Vector2( 0, 0 )
 
-[sub_resource type="AnimationNodeBlend2" id=14]
+[sub_resource type="AnimationNodeBlend2" id=13]
 filter_enabled = true
 filters = [ "Node 2/Skeleton:head", "Node 2/Skeleton:hips", "Node 2/Skeleton:left_arm", "Node 2/Skeleton:left_fore_arm", "Node 2/Skeleton:left_hand", "Node 2/Skeleton:left_hand_index_1", "Node 2/Skeleton:left_hand_index_2", "Node 2/Skeleton:left_hand_index_3", "Node 2/Skeleton:left_hand_middle_1", "Node 2/Skeleton:left_hand_middle_2", "Node 2/Skeleton:left_hand_middle_3", "Node 2/Skeleton:left_hand_pinky_1", "Node 2/Skeleton:left_hand_pinky_2", "Node 2/Skeleton:left_hand_pinky_3", "Node 2/Skeleton:left_hand_ring_1", "Node 2/Skeleton:left_hand_ring_2", "Node 2/Skeleton:left_hand_ring_3", "Node 2/Skeleton:left_hand_thumb_1", "Node 2/Skeleton:left_hand_thumb_2", "Node 2/Skeleton:left_hand_thumb_3", "Node 2/Skeleton:left_shoulder", "Node 2/Skeleton:neck", "Node 2/Skeleton:right_arm", "Node 2/Skeleton:right_fore_arm", "Node 2/Skeleton:right_hand", "Node 2/Skeleton:right_hand_index_1", "Node 2/Skeleton:right_hand_index_2", "Node 2/Skeleton:right_hand_index_3", "Node 2/Skeleton:right_hand_middle_1", "Node 2/Skeleton:right_hand_middle_2", "Node 2/Skeleton:right_hand_middle_3", "Node 2/Skeleton:right_hand_pinky_1", "Node 2/Skeleton:right_hand_pinky_2", "Node 2/Skeleton:right_hand_pinky_3", "Node 2/Skeleton:right_hand_ring_1", "Node 2/Skeleton:right_hand_ring_2", "Node 2/Skeleton:right_hand_ring_3", "Node 2/Skeleton:right_hand_thumb_1", "Node 2/Skeleton:right_hand_thumb_2", "Node 2/Skeleton:right_hand_thumb_3", "Node 2/Skeleton:right_shoulder", "Node 2/Skeleton:spine", "Node 2/Skeleton:spine_1", "Node 2/Skeleton:spine_2" ]
 
-[sub_resource type="AnimationNodeBlendTree" id=15]
+[sub_resource type="AnimationNodeBlendTree" id=14]
 graph_offset = Vector2( 0, 140 )
-nodes/Animation/node = SubResource( 4 )
+nodes/Animation/node = SubResource( 3 )
 nodes/Animation/position = Vector2( -220, 280 )
-"nodes/Animation 2/node" = SubResource( 3 )
+"nodes/Animation 2/node" = SubResource( 2 )
 "nodes/Animation 2/position" = Vector2( -40, 160 )
-nodes/BlendSpace1D/node = SubResource( 7 )
+nodes/BlendSpace1D/node = SubResource( 6 )
 nodes/BlendSpace1D/position = Vector2( -300, 60 )
-nodes/move/node = SubResource( 13 )
+nodes/move/node = SubResource( 12 )
 nodes/move/position = Vector2( -60, -20 )
 nodes/output/position = Vector2( 640, 160 )
-nodes/vr_hands_mask/node = SubResource( 14 )
+nodes/vr_hands_mask/node = SubResource( 13 )
 nodes/vr_hands_mask/position = Vector2( 220, 120 )
-node_connections = [ "vr_hands_mask", 0, "move", "vr_hands_mask", 1, "Animation 2", "output", 0, "vr_hands_mask" ]
+node_connections = [ "output", 0, "vr_hands_mask", "vr_hands_mask", 0, "move", "vr_hands_mask", 1, "Animation 2" ]
 
 [node name="Joueur" type="KinematicBody"]
 script = ExtResource( 1 )
@@ -90,11 +90,10 @@ transform = Transform( 1, 0, 0, 0, -1.62921e-07, 1, 0, -1, -1.62921e-07, 0, 1.47
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.735, -0.979 )
 
 [node name="Camera" type="Camera" parent="CollisionShape/Sakurada_Fumiriya/Head"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 current = true
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
-tree_root = SubResource( 15 )
+tree_root = SubResource( 14 )
 parameters/BlendSpace1D/blend_position = 0.975
 parameters/move/blend_position = Vector2( 0, 0 )
 parameters/vr_hands_mask/blend_amount = 0.0
@@ -103,18 +102,45 @@ parameters/vr_hands_mask/blend_amount = 0.0
 
 [node name="IK_LookAt_LeftArm" parent="ARVROrigin/ManetteGauche" index="0"]
 skeleton_path = NodePath("../../../CollisionShape/Sakurada_Fumiriya/Skeleton")
+update_mode = 0
 look_at_axis = 1
+use_our_rotation_x = false
+use_our_rotation_y = false
+use_negative_our_rot = false
 additional_rotation = Vector3( 0, 270, 0 )
+position_using_additional_bone = false
+additional_bone_name = ""
+additional_bone_length = 1.0
+debug_messages = false
 
 [node name="IK_LookAt_RightArm" parent="ARVROrigin/ManetteDroite" index="0"]
 skeleton_path = NodePath("../../../CollisionShape/Sakurada_Fumiriya/Skeleton")
+update_mode = 0
 look_at_axis = 1
+use_our_rotation_x = false
+use_our_rotation_y = false
+use_negative_our_rot = false
 additional_rotation = Vector3( 0, 90, 0 )
+position_using_additional_bone = false
+additional_bone_name = ""
+additional_bone_length = 1.0
+debug_messages = false
 
 [node name="IK_LookAt_Head" parent="ARVROrigin/ARVRCamera" index="0"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.122 )
 visible = false
 skeleton_path = NodePath("../../../CollisionShape/Sakurada_Fumiriya/Skeleton")
+update_mode = 0
+look_at_axis = 1
+use_our_rotation_x = false
+use_our_rotation_y = false
+use_our_rotation_z = false
+use_negative_our_rot = false
+additional_rotation = Vector3( 0, 0, 0 )
+position_using_additional_bone = false
+additional_bone_name = ""
+additional_bone_length = 1.0
+debug_messages = false
 
 [node name="CSGSphere3" parent="ARVROrigin/ARVRCamera/IK_LookAt_Head" index="0"]
 visible = false

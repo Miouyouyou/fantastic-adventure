@@ -76,14 +76,6 @@ class StandardFileHandler:
 	func read_file_as_string(filepath:String, mode:int) -> StatusAndString:
 		return read_file(filepath, mode).to_status_and_string()
 
-func _ready():
-	#convert_gltf_to_glb("user://everything-packed.gltf", "user://ookami_file_packed.glb")
-	var z:ZipFileHandler = ZipFileHandler.new()
-	if z.open_zip_file("user://everything-packed.zip") == OK:
-		convert_gltf_to_glb("everything-packed.gltf", "user://ookami_zip_packed.glb", z)
-	else:
-		print("WTF !??")
-
 static func align_buffer_on_4_bytes(buffer:PoolByteArray):
 	var buffer_size:int = buffer.size()
 	for i in range(0, buffer_size & 3):
@@ -256,3 +248,7 @@ static func convert_gltf_to_glb(gltf_filepath:String, glb_out_filepath:String, i
 	glb_file.store_32(glb_file_actual_size)
 	glb_file.close()
 	return OK
+
+func instantiate(model_filepath:String) -> Node:
+	return PackedSceneGLTF.new().import_gltf_scene(model_filepath)
+	

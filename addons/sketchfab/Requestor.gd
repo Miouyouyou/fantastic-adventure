@@ -93,7 +93,7 @@ func request(path, payload = null, options = DEFAULT_OPTIONS):
 				status = http.get_status()
 				if status in [
 					HTTPClient.STATUS_CANT_CONNECT,
-				    HTTPClient.STATUS_CANT_RESOLVE,
+					HTTPClient.STATUS_CANT_RESOLVE,
 					HTTPClient.STATUS_SSL_HANDSHAKE_ERROR,
 				]:
 					busy = false
@@ -259,7 +259,7 @@ func request(path, payload = null, options = DEFAULT_OPTIONS):
 		status = http.get_status()
 		if status in [
 			HTTPClient.STATUS_DISCONNECTED,
-		    HTTPClient.STATUS_CONNECTION_ERROR
+			HTTPClient.STATUS_CONNECTION_ERROR
 		] && !terminated && !canceled:
 			if file:
 				file.close()
