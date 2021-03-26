@@ -76,31 +76,57 @@ class StandardFileHandler:
 	func read_file_as_string(filepath:String, mode:int) -> StatusAndString:
 		return read_file(filepath, mode).to_status_and_string()
 
-func _ready():
+#func _ready():
 	#convert_gltf_to_glb("user://everything-packed.gltf", "user://ookami_file_packed.glb")
-	var z:ZipFileHandler = ZipFileHandler.new()
-	if z.open_zip_file("user://everything-packed.zip") == OK:
-		convert_gltf_to_glb("everything-packed.gltf", "user://ookami_zip_packed.glb", z)
-	else:
-		print("WTF !??")
+	#var z:ZipFileHandler = ZipFileHandler.new()
+	#if z.open_zip_file("user://everything-packed.zip") == OK:
+	#	convert_gltf_to_glb("everything-packed.gltf", "user://ookami_zip_packed.glb", z)
+	#else:
+	#	print("WTF !??")
 
-static func align_buffer_on_4_bytes(buffer:PoolByteArray):
+static func align_buffer_on_4_bytes(buffer:PoolByteArray) -> void:
 	var buffer_size:int = buffer.size()
 	for i in range(0, buffer_size & 3):
 		buffer.append(0)
 
-static func guess_mimetype(filepath:String) -> String:
+static func buffer_read_u16(buffer:PoolByteArray) -> int:
+	return (
+		(buffer[0] & 0xff) << 8 |
+		(buffer[1] & 0xff) << 0
+	)
+
+static func buffer_read_u32(buffer:PoolByteArray) -> int:
+	return (
+		(buffer[0] & 0xff) << 24  |
+		(buffer[1] & 0xff) << 16  |
+		(buffer[2] & 0xff) <<  8 |
+		(buffer[3] & 0xff) <<  0
+	)
+
+static func guess_mimetype(filepath:String, filedata:PoolByteArray) -> String:
 	var mimetype:String = ""
-	match filepath.get_extension():
-		".png":
-			mimetype = "image/png"
-		".jpg", ".jpeg":
+	var two_bytes:int = buffer_read_u16(filedata)
+	var four_bytes:int = buffer_read_u32(filedata)
+	match two_bytes:
+		0x424d: # Bitmap 'BM' header
+			mimetype = "image/bmp"
+		0xffd8: # JPEG SOI
 			mimetype = "image/jpg"
 		_:
-			mimetype = "application/octet-stream"
+			match four_bytes: 
+				0x89504e47: # .PNG
+					mimetype = "image/png"
+				0x47494638: # .GIF
+					mimetype = "image/gif"
+				_:
+					mimetype = "application/octet-stream"
+	print_debug("Guessed mimetype for filepath : " + filepath)
+	print_debug(mimetype)
+	print_debug("%x %x" % [two_bytes, four_bytes])
 	return mimetype
 
 static func convert_gltf_to_glb(gltf_filepath:String, glb_out_filepath:String, in_file_handler = StandardFileHandler.new()) -> int:
+	print_debug("Called here")
 	var gltf_read:StatusAndString = in_file_handler.read_file_as_string(gltf_filepath, File.READ)
 	if gltf_read.status != OK:
 		print_debug("Error " + str(gltf_read.status) + " while trying to open " + gltf_filepath)
@@ -141,32 +167,36 @@ static func convert_gltf_to_glb(gltf_filepath:String, glb_out_filepath:String, i
 	# FIXME Factorize buffers storage
 	for buffer_desc in gltf["buffers"]:
 		# TODO Fail fast if it doesn't, for the moment
-		if buffer_desc.has("uri"):
-			var uri:String = buffer_desc["uri"]
-			if not uri.begins_with("data:"):
-				var buffer_filepath:String = gltf_dirpath + str(buffer_desc["uri"])
-				var buffer_read:StatusAndData = in_file_handler.read_file(buffer_filepath, File.READ)
-				if buffer_read.status == OK:
-					buffers_desc[buf_i] = {"offset": glb_buffer.size()}
-					buf_i += 1
-					glb_buffer.append_array(buffer_read.data)
-					align_buffer_on_4_bytes(glb_buffer)
-				else:
-					print_debug("Could not read " + buffer_filepath)
-					print_debug("Reason " + str(buffer_read.status))
-					return ERR_FILE_CANT_READ
-			else:
-				# We're dealing with embedded data.
-				# We only deal with base64 encoding at the moment
-				# If you're using anything else... Why ??
-				var base64_signature:int = uri.find(";base64,")
-				if base64_signature != -1:
-					var base64_start:int = base64_signature + ";base64,".length()
-					if base64_start <= uri.length():
-						buffers_desc[buf_i] = {"offset": glb_buffer.size()}
-						buf_i += 1
-						glb_buffer.append_array(Marshalls.base64_to_raw(uri.substr(base64_start)))
-						align_buffer_on_4_bytes(glb_buffer)
+		if not buffer_desc.has("uri"):
+			print_debug("This GLTF converter requires buffers with URI")
+			return ERR_INVALID_DATA
+
+		var uri:String = buffer_desc["uri"]
+		var buffer:PoolByteArray
+		if not uri.begins_with("data:"):
+			var buffer_filepath:String = gltf_dirpath + str(buffer_desc["uri"])
+			var buffer_read:StatusAndData = in_file_handler.read_file(buffer_filepath, File.READ)
+			if buffer_read.status != OK:
+				print_debug("Could not read " + buffer_filepath)
+				print_debug("Reason " + str(buffer_read.status))
+				return ERR_FILE_CANT_READ
+			buffer = buffer_read.data
+		else:
+			# We're dealing with embedded data.
+			# We only deal with base64 encoding at the moment
+			# If you're using anything else... Why ??
+			var base64_signature:int = uri.find(";base64,")
+			if base64_signature == -1:
+				print_debug("When it comes to inlined buffers")
+				print_debug("This GLTF to GLB converter only support base64 encoded buffers")
+				print_debug("Cannot convert : " + str(uri))
+				return ERR_INVALID_DATA
+			var base64_start:int = base64_signature + ";base64,".length()
+			buffer = Marshalls.base64_to_raw(uri.substr(base64_start))
+		buffers_desc[buf_i] = {"offset": glb_buffer.size()}
+		buf_i += 1
+		glb_buffer.append_array(buffer)
+		align_buffer_on_4_bytes(glb_buffer)
 
 	for bufferview_desc in gltf["bufferViews"]:
 		var previous_buf_i = bufferview_desc["buffer"]
@@ -179,40 +209,47 @@ static func convert_gltf_to_glb(gltf_filepath:String, glb_out_filepath:String, i
 
 	# Now we add the images into the main buffer, create new bufferViews to
 	# reference them and link the images references to these bufferViews
-	var buffer_view_i = gltf["bufferViews"].size()
+	var buffer_view_i:int = gltf["bufferViews"].size()
 	if gltf.has("images"):
 		for image_desc in gltf["images"]:
 			# If the image has not URI, it probably refers to a bufferView
 			# in which case, we don't need to touch it, since we already
 			# updated the previously defined bufferViews.
-			# FIXME We could still fail if uri and bufferView are missing,
-			# just in case...
-			if image_desc.has("uri"):
-				var image_filepath:String = gltf_dirpath + str(image_desc["uri"])
-				var image_read:StatusAndData = in_file_handler.read_file(image_filepath, File.READ)
-				if image_read.status == OK:
-					var image_file_size:int = image_read.data.size()
-					# Let's be optimistic and store the new image bufferView before
-					# actually storing the image data into the GLB buffer
-					var image_buffer_view = {
-						"buffer": 0,
-						"byteLength": image_file_size,
-						"byteOffset": glb_buffer.size()
-					}
-					gltf["bufferViews"].append(image_buffer_view)
-					glb_buffer.append_array(image_read.data)
-					align_buffer_on_4_bytes(glb_buffer)
-					image_desc.erase("uri")
-					image_desc["bufferView"] = buffer_view_i
-					if not image_desc.has("mimeType"):
-						# Because why put the filetype when you can just avoid
-						# it !
-						image_desc["mimeType"] = guess_mimetype(image_filepath)
-					buffer_view_i += 1
-				else:
-					print_debug("Could not read " + image_filepath)
-					print_debug("Reason " + str(image_read.status))
-					return ERR_FILE_CANT_READ
+			if image_desc.has("bufferView") and not image_desc.has("uri"):
+				continue
+
+			# No bufferView and no URI is considered invalid at the moment
+			if not (image_desc.has("bufferView") or image_desc.has("uri")):
+				print_debug("The following image definition is not supported")
+				print_debug("by this converter :")
+				print_debug(str(image_desc))
+				return ERR_INVALID_DATA
+
+			var image_filepath:String = gltf_dirpath + str(image_desc["uri"])
+			var image_read:StatusAndData = in_file_handler.read_file(image_filepath, File.READ)
+			if image_read.status != OK:
+				print_debug("Could not read " + image_filepath)
+				print_debug("Reason " + str(image_read.status))
+				return ERR_FILE_CANT_READ
+
+			var image_file_size:int = image_read.data.size()
+			# Let's be optimistic and store the new image bufferView before
+			# actually storing the image data into the GLB buffer
+			var image_buffer_view = {
+				"buffer": 0,
+				"byteLength": image_file_size,
+				"byteOffset": glb_buffer.size()
+			}
+			gltf["bufferViews"].append(image_buffer_view)
+			glb_buffer.append_array(image_read.data)
+			align_buffer_on_4_bytes(glb_buffer)
+			image_desc.erase("uri")
+			image_desc["bufferView"] = buffer_view_i
+			if not image_desc.has("mimeType"):
+				# Because why put the filetype when you can just avoid
+				# it !
+				image_desc["mimeType"] = guess_mimetype(image_filepath, image_read.data)
+			buffer_view_i += 1
 
 	# Now that everything is converted and stored, generate the GLB buffer
 	# description.

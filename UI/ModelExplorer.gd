@@ -39,12 +39,13 @@ func cb_test_login_success(credentials:Dictionary):
 	print(credentials)
 	set_meta("access_token", credentials["access_token"])
 	sketchfab_list_models({
+		"q": "curry",
 		"license": "by",
 		"downloadable": true,
-		"max_face_count": 20000,
-		"categories": ["characters-creatures"],
+		"max_face_count": 50000,
+		"categories": ["food-drink"],
 		"sort_by": "-likeCount",
-		"max_filesizes": "gltf:10000000" })
+		"max_filesizes": "gltf:50000000" })
 
 func cb_login_request(result: int, response_code: int, headers: PoolStringArray, body: PoolByteArray, download_id: int, reason: String, extra_arg):
 	print(result)
@@ -152,7 +153,7 @@ func credentials_load_cached(cache_filepath:String) -> bool:
 	return loaded
 
 func sketchfab_list_models(search_criterias:Dictionary):
-	var cache_content = parse_json(FileHelpers.read_text("/tmp/list.json"))
+	var cache_content = parse_json(FileHelpers.read_text("user://sketchfab_list.json"))
 	if cache_content != null:
 		display_model_list(cache_content)
 		return
