@@ -57,11 +57,15 @@ func ui_enable_search():
 
 func ui_search():
 	sketchfab_list_models({
+<<<<<<< HEAD
 		"q": ui_input_search.text,
+=======
+		"q": "curry",
+>>>>>>> e6d441482ba01e9b53be6a7b54d2eb66ace22566
 		"license": "by",
 		"downloadable": true,
 		"max_face_count": 50000,
-		"categories": ["characters-creatures"],
+		"categories": ["food-drink"],
 		"sort_by": "-likeCount",
 		"max_filesizes": "gltf:50000000" })
 
