@@ -43,6 +43,7 @@ SavedData="*res://SavedData/SavedData.gd"
 DownloadManager="*res://Network/DownloadManager.gd"
 FileHelpers="*res://helpers/file_helpers.gd"
 GLTFHelpers="*res://helpers/gltf_helpers.gd"
+ImageHelpers="*res://helpers/image_helpers.gd"
 
 [editor_plugins]
 
