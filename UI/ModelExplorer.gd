@@ -9,6 +9,8 @@ var thumbnail_object = preload("res://UI/ModelThumbnail.tscn")
 
 const sketchfab_api_host : String = "https://sketchfab.com"
 
+onready var ui_input_search = $ContainerUI/ContainerToolbar/TextSearch
+
 onready var ui_label_model_name = $ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsName
 onready var ui_label_model_author = $ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsAuthor
 onready var ui_label_model_polycount = $ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsPolycount
@@ -48,15 +50,47 @@ func auth_call_post(reason, endpoint, form_data, callback_obj, callback):
 	DownloadManager.post_json(
 		reason, endpoint, form_data, callback_obj, callback, headers)
 
-func cb_test_login_success(credentials:Dictionary):
-	set_meta("access_token", credentials["access_token"])
+func ui_enable_search():
+	$ContainerUI/ContainerToolbar/ButtonFilters.disabled = false
+	$ContainerUI/ContainerToolbar/TextSearch.editable = true
+	$ContainerUI/ContainerToolbar/ButtonSearch.disabled = false
+
+func ui_search():
 	sketchfab_list_models({
+		"q": ui_input_search.text,
 		"license": "by",
 		"downloadable": true,
 		"max_face_count": 50000,
 		"categories": ["characters-creatures"],
 		"sort_by": "-likeCount",
 		"max_filesizes": "gltf:50000000" })
+
+func sketchfab_endpoint_url(endpoint:String) -> String:
+	return sketchfab_api_host + endpoint
+
+func sketchfab_get_licenses() -> PoolStringArray:
+	return PoolStringArray()
+
+func sketchfab_get_categories() -> PoolStringArray:
+	DownloadManager.get_request(
+		"Getting categories list",
+		sketchfab_endpoint_url("/v3/categories"),
+		self,
+		"cb_got_categories")
+	return PoolStringArray()
+
+func sketchfab_list_models(search_criterias:Dictionary):
+	var endpoint_url = sketchfab_endpoint_url("/v3/search?type=models")
+	var query_params = HTTPClient.new().query_string_from_dict(search_criterias)
+	var complete_url = endpoint_url + "&" + query_params
+	DownloadManager.get_request(
+		"Getting CC-BY models", complete_url, self, "cb_got_models")
+
+
+
+func cb_test_login_success(credentials:Dictionary):
+	set_meta("access_token", credentials["access_token"])
+	ui_enable_search()
 
 func cb_login_request(result: int, response_code: int, headers: PoolStringArray, body: PoolByteArray, download_id: int, reason: String, extra_arg):
 	DownloadManager.remove_ref(download_id)
@@ -160,11 +194,10 @@ func set_select_description_sketchfab(sketchfab_model_info:Dictionary):
 	auth_call_get("Download the model", "/v3/models/" + uid + "/download", self, "cb_model_download_url_obtained", uid)
 
 func login_sketchfab(login_details:Dictionary) -> void:
-	var host:String = "https://sketchfab.com"
 	var endpoint:String = "/oauth2/token/?grant_type=password&client_id=" + CLIENT_ID
 	DownloadManager.post_form(
 		"Login to Sketchfab",
-		host + endpoint, login_details,
+		sketchfab_endpoint_url(endpoint), login_details,
 		self, "cb_login_request")
 
 # ... Only available during the testing phase
@@ -182,13 +215,6 @@ func credentials_load_cached(cache_filepath:String) -> bool:
 			emit_signal("sketchfab_login_success", credentials)
 	return loaded
 
-func sketchfab_list_models(search_criterias:Dictionary):
-	var end_point = "/v3/search?type=models"
-	var query_params = HTTPClient.new().query_string_from_dict(search_criterias)
-	var url = "https://sketchfab.com" + end_point + "&" + query_params
-	DownloadManager.get_request(
-		"Getting CC-BY models", url, self, "cb_got_models")
-
 func display_model_list(list:Dictionary):
 	# print(list["results"][0].keys())
 
@@ -197,9 +223,9 @@ func display_model_list(list:Dictionary):
 			# print(thumbnail_data)
 			if thumbnail_data["width"] == 256:
 				var thumbnail = thumbnail_object.instance()
+				$ContainerUI/ContainerSearchResults/ScrollSearchResults/ListResults.add_child(thumbnail)
 				thumbnail.set_thumbnail_with_url(thumbnail_data["url"], result["name"])
 				thumbnail.set_click_handler(self, "cb_sketchfab_thumbnail_click", [result])
-				$ContainerUI/ContainerSearchResults/ScrollSearchResults/ListResults.add_child(thumbnail)
 	return
 
 func _ready():
@@ -215,3 +241,13 @@ func _ready():
 			login_sketchfab(parsed_data)
 		else:
 			print("Could not open ", secrets_filepath)
+
+
+func _on_TextSearch_text_entered(new_text):
+	ui_search()
+	pass # Replace with function body.
+
+
+func _on_ButtonSearch_pressed():
+	ui_search()
+	pass # Replace with function body.

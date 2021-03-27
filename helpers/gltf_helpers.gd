@@ -63,7 +63,7 @@ class ZipFileHandler:
 		return read_file(filepath, mode).to_status_and_string()
 
 class StandardFileHandler:
-	func read_file(filepath:String, mode:int) -> StatusAndData:
+	func read_file(filepath:String, mode = File.READ) -> StatusAndData:
 		var file_opener:File = File.new()
 		var ret:int = file_opener.open(filepath, mode)
 		if ret != OK:

@@ -1,5 +1,7 @@
 extends Node
 
+# TODO Merge with GLTFHelpers File helpers, since it has proper error handling
+
 func read_text(filepath:String) -> String:
 	var file_opener : File = File.new()
 	var content:String = ""

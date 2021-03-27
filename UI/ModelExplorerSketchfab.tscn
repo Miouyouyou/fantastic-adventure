@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://SimpleUITheme.tres" type="Theme" id=1]
 [ext_resource path="res://UI/3DPreview.tscn" type="PackedScene" id=2]
@@ -10,6 +10,45 @@ ambient_light_color = Color( 1, 1, 1, 1 )
 
 [sub_resource type="World" id=2]
 environment = SubResource( 1 )
+
+[sub_resource type="VisualShaderNodeColorConstant" id=3]
+constant = Color( 0.632812, 0.632812, 0.632812, 1 )
+
+[sub_resource type="VisualShader" id=4]
+code = "shader_type spatial;
+render_mode specular_schlick_ggx, unshaded, ambient_light_disabled;
+
+
+
+
+void vertex() {
+// Output:0
+
+}
+
+void fragment() {
+// Color:5
+	vec3 n_out5p0 = vec3(0.632812, 0.632812, 0.632812);
+	float n_out5p1 = 1.000000;
+
+// Output:0
+	ALBEDO = n_out5p0;
+
+}
+
+void light() {
+// Output:0
+
+}
+"
+flags/ambient_light_disabled = true
+flags/unshaded = true
+nodes/fragment/5/node = SubResource( 3 )
+nodes/fragment/5/position = Vector2( 52, 149 )
+nodes/fragment/connections = PoolIntArray( 5, 0, 0, 0 )
+
+[sub_resource type="ShaderMaterial" id=5]
+shader = SubResource( 4 )
 
 [node name="Control" type="Control"]
 anchor_right = 1.0
@@ -35,6 +74,7 @@ size_flags_horizontal = 3
 [node name="ButtonFilters" type="Button" parent="ContainerUI/ContainerToolbar"]
 margin_right = 62.0
 margin_bottom = 29.0
+disabled = true
 text = "Filters"
 
 [node name="TextSearch" type="LineEdit" parent="ContainerUI/ContainerToolbar"]
@@ -43,12 +83,14 @@ margin_right = 956.0
 margin_bottom = 29.0
 size_flags_horizontal = 3
 align = 1
+editable = false
 placeholder_text = "Search word"
 
 [node name="ButtonSearch" type="Button" parent="ContainerUI/ContainerToolbar"]
 margin_left = 960.0
 margin_right = 1024.0
 margin_bottom = 29.0
+disabled = true
 text = "Search"
 
 [node name="ContainerSearchResults" type="HBoxContainer" parent="ContainerUI"]
@@ -127,5 +169,91 @@ margin_right = 300.0
 margin_bottom = 438.0
 text = "Description"
 autowrap = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+material = SubResource( 5 )
+margin_right = 194.0
+margin_bottom = 599.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LabelLicense" type="Label" parent="VBoxContainer"]
+margin_right = 194.0
+margin_bottom = 19.0
+text = "License"
+
+[node name="LineEdit" type="OptionButton" parent="VBoxContainer"]
+margin_top = 23.0
+margin_right = 194.0
+margin_bottom = 48.0
+
+[node name="LabelDownloadable" type="Label" parent="VBoxContainer"]
+margin_top = 52.0
+margin_right = 194.0
+margin_bottom = 71.0
+text = "Downloadable"
+
+[node name="CheckBox" type="CheckBox" parent="VBoxContainer"]
+margin_top = 75.0
+margin_right = 194.0
+margin_bottom = 102.0
+
+[node name="LabelMaxFaceCount" type="Label" parent="VBoxContainer"]
+margin_top = 106.0
+margin_right = 194.0
+margin_bottom = 125.0
+text = "Max faces"
+
+[node name="SpinBox" type="SpinBox" parent="VBoxContainer"]
+margin_top = 129.0
+margin_right = 194.0
+margin_bottom = 158.0
+
+[node name="LabelCategories" type="Label" parent="VBoxContainer"]
+margin_top = 162.0
+margin_right = 194.0
+margin_bottom = 181.0
+text = "Categories"
+
+[node name="ItemList" type="ItemList" parent="VBoxContainer"]
+margin_top = 185.0
+margin_right = 194.0
+margin_bottom = 185.0
+
+[node name="LabelSortBy" type="Label" parent="VBoxContainer"]
+margin_top = 189.0
+margin_right = 194.0
+margin_bottom = 208.0
+text = "Sort by"
+
+[node name="OptionButton" type="OptionButton" parent="VBoxContainer"]
+margin_top = 212.0
+margin_right = 194.0
+margin_bottom = 237.0
+
+[node name="LabelMaxFilesizes" type="Label" parent="VBoxContainer"]
+margin_top = 241.0
+margin_right = 194.0
+margin_bottom = 260.0
+text = "Maximum filesizes"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer"]
+margin_top = 264.0
+margin_right = 194.0
+margin_bottom = 316.0
+
+[node name="LabelMaxFilesizesGLTF" type="Label" parent="VBoxContainer/VBoxContainer"]
+margin_right = 194.0
+margin_bottom = 19.0
+text = "GLTF"
+
+[node name="SpinBoxGLTFFilesize" type="SpinBox" parent="VBoxContainer/VBoxContainer"]
+margin_top = 23.0
+margin_right = 194.0
+margin_bottom = 52.0
+
+[connection signal="text_entered" from="ContainerUI/ContainerToolbar/TextSearch" to="." method="_on_TextSearch_text_entered"]
+[connection signal="pressed" from="ContainerUI/ContainerToolbar/ButtonSearch" to="." method="_on_ButtonSearch_pressed"]
 
 [editable path="ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/ContainerDetails3DView/Control"]
