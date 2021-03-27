@@ -18,6 +18,7 @@ func _ready():
 func _on_ButtonHost_pressed():
 	Network.create_server()
 	create_rooms_list()
+	
 	pass # Replace with function body.
 
 func _on_ButtonJoin_pressed():
