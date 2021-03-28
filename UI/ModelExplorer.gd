@@ -3,7 +3,7 @@ extends Control
 const CLIENT_ID = "qx8rY5mPvEwrtjHoUPaqYQflQNXB9L8w8fz1ZWjH"
 
 signal sketchfab_login_success(credentials)
-signal sketchfab_login_error(error_code, error_message)
+signal sketchfab_error(error_code, error_message)
 
 var thumbnail_object = preload("res://UI/ModelThumbnail.tscn")
 
@@ -18,6 +18,19 @@ onready var ui_label_model_licence = $ContainerUI/ContainerSearchResults/ScrollD
 onready var ui_label_model_size = $ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsSize
 onready var ui_label_model_description = $ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/LabelDetailsDescription
 onready var ui_model_preview = $"ContainerUI/ContainerSearchResults/ScrollDetails/ContainerDetails/ContainerDetails3DView/Control/Spatial"
+
+var ui_filter_field_licences:OptionButton
+onready var ui_filter_field_max_face_count:SpinBox = $"PanelContainer/ScrollContainer/VBoxContainer/SpinBoxMaxFaceCount"
+onready var ui_filter_field_pbr:OptionButton = $"PanelContainer/ScrollContainer/VBoxContainer/OptionsPBR"
+var ui_filter_field_categories:ItemList
+onready var ui_filter_field_sort_by:OptionButton = $"PanelContainer/ScrollContainer/VBoxContainer/OptionsSortBy"
+onready var ui_filter_field_max_gltf_filesize:SpinBox = $"PanelContainer/ScrollContainer/VBoxContainer/VBoxContainer/SpinBoxGLTFFilesize"
+onready var ui_filters_container = $PanelContainer
+
+onready var ui_results_list:GridContainer = $"ContainerUI/ContainerSearchResults/ScrollContainer/SearchResults"
+
+func ui_max_filesizes_to_query_string() -> String:
+	return "gltf:" + str(int(ui_filter_field_max_gltf_filesize.value))
 
 func saved_model_filepath(model_uid:String) -> String:
 	return "user://" + model_uid + ".glb"
@@ -55,42 +68,41 @@ func ui_enable_search():
 	$ContainerUI/ContainerToolbar/TextSearch.editable = true
 	$ContainerUI/ContainerToolbar/ButtonSearch.disabled = false
 
+func options_get_selected_text(option_button:OptionButton):
+	return option_button.get_item_text(option_button.selected)
+
+func list_get_selected_options(ui_list:ItemList) -> Array:
+	var result:Array = []
+	for item_index in ui_list.get_selected_items():
+		result.append(ui_list.get_item_text(item_index))
+	return result
+
+
 func ui_search():
-	sketchfab_list_models({
-<<<<<<< HEAD
+	var query:Dictionary = {
 		"q": ui_input_search.text,
-=======
-		"q": "curry",
->>>>>>> e6d441482ba01e9b53be6a7b54d2eb66ace22566
-		"license": "by",
-		"downloadable": true,
-		"max_face_count": 50000,
-		"categories": ["food-drink"],
-		"sort_by": "-likeCount",
-		"max_filesizes": "gltf:50000000" })
+		"license": options_get_selected_text(ui_filter_field_licences),
+		"max_face_count": int(ui_filter_field_max_face_count.value),
+		"categories": ["characters-creatures", "food-drink"],
+		"sort_by": options_get_selected_text(ui_filter_field_sort_by),
+		"max_filesizes": ui_max_filesizes_to_query_string(),
+		"downloadable": true }
+	if ui_filter_field_pbr.selected > 0:
+		query["pbr_type"] = options_get_selected_text(ui_filter_field_pbr)
+
+	print_debug(to_json(query))
+	sketchfab_list_models(query)
 
 func sketchfab_endpoint_url(endpoint:String) -> String:
 	return sketchfab_api_host + endpoint
-
-func sketchfab_get_licenses() -> PoolStringArray:
-	return PoolStringArray()
-
-func sketchfab_get_categories() -> PoolStringArray:
-	DownloadManager.get_request(
-		"Getting categories list",
-		sketchfab_endpoint_url("/v3/categories"),
-		self,
-		"cb_got_categories")
-	return PoolStringArray()
 
 func sketchfab_list_models(search_criterias:Dictionary):
 	var endpoint_url = sketchfab_endpoint_url("/v3/search?type=models")
 	var query_params = HTTPClient.new().query_string_from_dict(search_criterias)
 	var complete_url = endpoint_url + "&" + query_params
+	print_debug(complete_url)
 	DownloadManager.get_request(
 		"Getting CC-BY models", complete_url, self, "cb_got_models")
-
-
 
 func cb_test_login_success(credentials:Dictionary):
 	set_meta("access_token", credentials["access_token"])
@@ -109,7 +121,7 @@ func cb_login_request(result: int, response_code: int, headers: PoolStringArray,
 	else:
 		# FIXME : The API actually provide accurate information
 		# Relay these info here
-		emit_signal("sketchfab_login_error", response_code, "An error occured")
+		emit_signal("sketchfab_error", "login", [response_code])
 
 func http_ok(result:int, response_code:int) -> bool:
 	return (result == OK and response_code == 200)
@@ -119,12 +131,11 @@ func cb_got_models(result: int, response_code: int, headers: PoolStringArray, bo
 	if result == OK and response_code == 200:
 		# FIXME Check the results before passing them
 		var json_data = body.get_string_from_utf8()
-		FileHelpers.write_text("/tmp/list.json", json_data)
 		display_model_list(parse_json(json_data))
 	else:
 		# FIXME : The API actually provide accurate information
 		# Relay these info here
-		emit_signal("sketchfab_login_error", response_code, "An error occured")
+		emit_signal("sketchfab_error", "models_list", [response_code])
 
 func cb_sketchfab_thumbnail_click(args):
 	var sketchfab_model_info : Dictionary = args[0]
@@ -220,6 +231,7 @@ func credentials_load_cached(cache_filepath:String) -> bool:
 	return loaded
 
 func display_model_list(list:Dictionary):
+	print_debug(list)
 	# print(list["results"][0].keys())
 
 	for result in list["results"]:
@@ -227,14 +239,20 @@ func display_model_list(list:Dictionary):
 			# print(thumbnail_data)
 			if thumbnail_data["width"] == 256:
 				var thumbnail = thumbnail_object.instance()
-				$ContainerUI/ContainerSearchResults/ScrollSearchResults/ListResults.add_child(thumbnail)
+				ui_results_list.add_child(thumbnail)
 				thumbnail.set_thumbnail_with_url(thumbnail_data["url"], result["name"])
 				thumbnail.set_click_handler(self, "cb_sketchfab_thumbnail_click", [result])
 	return
 
 func _ready():
 	connect("sketchfab_login_success", self, "cb_test_login_success")
+	connect("sketchfab_error", self, "default_signal_handler_sketchfab_error")
+	
+	ui_filter_field_licences = $"PanelContainer/ScrollContainer/VBoxContainer/OptionsLicenses"
+	ui_filter_field_categories = $"PanelContainer/ScrollContainer/VBoxContainer/ListCategories"
 
+	sketchfab_get_licenses()
+	sketchfab_get_categories()
 	# Until I create the login UI
 	if credentials_load_cached("user://sketchfab_token.json"):
 		print("Success !")
@@ -249,9 +267,92 @@ func _ready():
 
 func _on_TextSearch_text_entered(new_text):
 	ui_search()
-	pass # Replace with function body.
-
 
 func _on_ButtonSearch_pressed():
 	ui_search()
+
+const FILTER_FIELD_UNKNOWN = 0
+const FILTER_FIELD_LICENCE = 1
+const FILTER_FIELD_CATEGORIES = 2
+
+func cb_sketchfab_update_filters(
+	result: int,
+	response_code: int,
+	headers: PoolStringArray,
+	body: PoolByteArray,
+	download_id: int,
+	reason: String,
+	filter_field:int) -> void:
+	if result == OK && response_code == 200:
+		var json_parse:JSONParseResult = JSON.parse(body.get_string_from_utf8())
+		if json_parse.error != OK || !(json_parse.result is Dictionary):
+			print_debug("Could not parse Sketchfab response !?")
+			print_debug("Error : " + str(json_parse.error))
+			print_debug("Result type : " + str(typeof(json_parse)))
+			print_debug("Expected type : " + str(typeof({})))
+			# FIXME Generate a signal and show the error to the user !!
+			return
+		var json:Dictionary = json_parse.result
+		match filter_field:
+			FILTER_FIELD_LICENCE:
+				ui_refresh_licences_json(json_parse.result)
+			FILTER_FIELD_CATEGORIES:
+				ui_refresh_categories_json(json_parse.result)
+			FILTER_FIELD_UNKNOWN, _:
+				pass
+	else:
+		print_debug(reason + " failed...")
+		print_debug("Result : " + str(result))
+		print_debug("HTTP code : " + str(response_code))
+		# FIXME Generate a signal and show the error to the user !!
+		return
+
+func ui_refresh_licences_json(sketchfab_response:Dictionary) -> void:
+	var results:Array = sketchfab_response["results"]
+	ui_filter_field_licences.clear()
+	for result in results:
+		ui_filter_field_licences.add_item(result["slug"])
+
+func ui_refresh_categories_json(sketchfab_response:Dictionary) -> void:
+	var results:Array = sketchfab_response["results"]
+	ui_filter_field_categories.clear()
+	for result in results:
+		ui_filter_field_categories.add_item(result["slug"])
+	print_debug(ui_filter_field_categories.items.size())
+
+func sketchfab_get_licenses() -> void:
+	DownloadManager.get_request(
+		"Getting licences list",
+		sketchfab_endpoint_url("/v3/licenses"),
+		self, "cb_sketchfab_update_filters", FILTER_FIELD_LICENCE)
+
+func sketchfab_get_categories() -> void:
+	DownloadManager.get_request(
+		"Getting categories list",
+		sketchfab_endpoint_url("/v3/categories"),
+		self, "cb_sketchfab_update_filters", FILTER_FIELD_CATEGORIES)
+
+func _on_ButtonClose_pressed():
+	ui_filters_container.visible = false
+	pass # Replace with function body.
+
+func _on_ButtonFilters_pressed():
+	ui_filters_container.visible = true
+	pass # Replace with function body.
+
+func default_signal_handler_sketchfab_error(part:String, args:Array) -> void:
+	match part:
+		"login":
+			print_debug("Something wrong happened during the login phase")
+			print_debug("Error : " + str(args[0]))
+		"models_list":
+			print_debug("Something wrong happened when trying to list models")
+			print_debug("Error : " + str(args[0]))
+		_:
+			print_debug("Unknown error during unknown phase : " + part)
+	return
+
+
+func _on_SearchResults_resized():
+	print_debug("RESIZED !!")
 	pass # Replace with function body.

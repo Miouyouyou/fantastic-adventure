@@ -192,7 +192,10 @@ static func convert_gltf_to_glb(gltf_filepath:String, glb_out_filepath:String, i
 
 	for bufferview_desc in gltf["bufferViews"]:
 		var previous_buf_i = bufferview_desc["buffer"]
-		var previous_offset = bufferview_desc["byteOffset"]
+		# Turns out that you can define a bufferView without offset
+		# I'm more and more surpriesd by the number of GLTF that
+		# are trying to cut cornes... Do you people HANDCRAFT your GLTF files !?
+		var previous_offset:int = bufferview_desc.get("byteOffset", 0)
 		var new_offset = buffers_desc[previous_buf_i]["offset"] + previous_offset
 		# All bufferViews now reference the GLB buffer
 		bufferview_desc["buffer"] = 0
