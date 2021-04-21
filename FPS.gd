@@ -20,6 +20,8 @@ onready var animation_tree = $AnimationTree
 
 var vr_interface:ARVRInterface
 
+onready var ui_menu = $CollisionShape/Sakurada_Fumiriya/Head/Camera/Menu
+
 export(bool) var vr_mode : bool = false
 
 func camera_desktop_disable():
@@ -63,13 +65,41 @@ func setup_desktop():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	vr_mode = false
 
+var item_prop_spawner = preload("items/prop_spawner.tscn")
+# FIXME No. Just no. Only for testing a few minutes.
+var prop_spawner
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	print_debug(vr_mode)
 	if not vr_mode:
 		setup_desktop()
 	else:
 		if not setup_vr():
 			setup_desktop()
+
+onready var background_loader = $Loader
+
+func equip_prop_spawner(spawn_container:Node):
+	print_debug("Equipping")
+	prop_spawner = item_prop_spawner.instance()
+	prop_spawner.spawns_container = spawn_container
+	if vr_mode:
+		arvr_origin.equip(prop_spawner)
+	else:
+		head.add_child(prop_spawner)
+
+	var model:ModelsInventory.ModelInfos = ModelsInventory.list_cached_models()[0]
+	background_loader.connect("object_loaded", self, "_cb_model_loaded")
+	background_loader.connect("object_load_error", self, "_cb_model_load_error")
+	background_loader.load_in_background(model.filepath, model)
+
+func _cb_model_loaded(model_reference:ModelsInventory.ModelInfos, model:Spatial):
+	var scale_factor:float = model_reference.userprefs["scale"] * 2
+	prop_spawner.load_model(model, scale_factor)
+
+func _cb_model_load_error(model_reference:ModelsInventory.ModelInfos) -> void:
+	print_debug("Could not load : " + model_reference.filepath)
 
 var menu_mode_active:bool = false
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -77,9 +107,9 @@ var menu_mode_active:bool = false
 #	pass
 
 func _input(event):
-	if event is InputEventMouseMotion:
-		#rotate_y(deg2rad(-event.relative.x * mouse_sensitivity))
-		head.rotate_x(deg2rad(event.relative.y * mouse_sensitivity))
+	if (not vr_mode) and (event is InputEventMouseMotion) and (not ui_menu.menu_shown()):
+		rotate_y(deg2rad(-event.relative.x * mouse_sensitivity))
+		head.rotate_x(deg2rad(-event.relative.y * mouse_sensitivity))
 		head.rotation.x = clamp(head.rotation.x, deg2rad(-90), deg2rad(90))
 		#$LookAtNode.translate(Vector3(event.relative.x*0.01, -event.relative.y*0.01, 0))
 #
@@ -89,13 +119,39 @@ func _input(event):
 	if Input.is_action_just_released("vr_turnright"):
 		rotate_y(deg2rad(-45/2.0))
 #
-	if event is InputEventKey and !event.pressed and event.scancode == KEY_ESCAPE:
-		menu_mode_active = !menu_mode_active
-		if menu_mode_active:
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-		else:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	if (not vr_mode) and (event is InputEventMouseButton) and (not ui_menu.menu_shown()):
+		if event.is_pressed():
+			if prop_spawner.model_loaded:
+				prop_spawner.use()
+			else:
+				print("Meep ! No model loaded !")
 
+	if event is InputEventKey and !event.pressed:
+		match event.scancode:
+			KEY_ESCAPE:
+				if ui_menu.menu_shown():
+					ui_menu.menu_show(false)
+					Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+				else:
+					menu_mode_active = !menu_mode_active
+					if menu_mode_active:
+						Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+					else:
+						Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			KEY_N:
+				ui_menu.menu_toggle()
+				if ui_menu.menu_shown():
+					ui_menu.switch_to_inventory()
+					Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+				else:
+					Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			KEY_P:
+				ui_menu.menu_toggle()
+				if ui_menu.menu_shown():
+					ui_menu.switch_to_sketchfab()
+					Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+				else:
+					Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 var frames : int = 0
 func _physics_process(delta):
@@ -159,3 +215,11 @@ func _physics_process(delta):
 	velocity = move_and_slide(velocity, Vector3.UP)
 	var _discarded = move_and_slide(fall, Vector3.UP)
 
+
+
+func _on_Menu_visibility_changed():
+	if ui_menu != null and not ui_menu.menu_shown():
+		var model = ui_menu.get_selected_model()
+		if model != null:
+			background_loader.load_in_background(model.filepath, model)
+	pass # Replace with function body.

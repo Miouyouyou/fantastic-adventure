@@ -41,6 +41,7 @@ script = ExtResource( 3 )
 
 [node name="StaticBody" type="StaticBody" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0 )
+collision_layer = 2
 __meta__ = {
 "_edit_group_": true
 }
@@ -99,6 +100,7 @@ transform = Transform( -0.1, 0, -8.74228e-09, 0, 0.1, 0, 8.74228e-09, 0, -0.1, 0
 follow_viewport_enable = true
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+visible = false
 anchor_right = 1.0
 margin_bottom = 72.0
 color = Color( 0, 0, 0, 1 )
@@ -107,6 +109,7 @@ __meta__ = {
 }
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer"]
+visible = false
 anchor_right = 1.0
 margin_bottom = 70.0
 theme = SubResource( 9 )
@@ -196,3 +199,5 @@ map_objects_cache_dir = "user://"
 stream = SubResource( 10 )
 autoplay = true
 bus = "Mic"
+
+[node name="Spawns" type="Spatial" parent="."]

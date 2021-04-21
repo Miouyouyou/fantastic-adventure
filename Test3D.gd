@@ -78,14 +78,13 @@ func _ready():
 	player_spawn_local()
 	speech_prepare()
 	speech_start_recording()
-	pass # Replace with function body.
 
 func player_spawn_local():
 	local_player = factory_player.instance()
-	# ???
 	players_transforms[Network.local_player_id] = local_player.transform
 	local_player.vr_mode = SavedData.player_data()["vr"]
 	add_child(local_player)
+	local_player.equip_prop_spawner($Spawns)
 	#speech_add_player_audio(Network.local_player_id)
 
 func player_spawn_remote(player_id):
@@ -150,7 +149,7 @@ func speech_remove_player_audio(player_id) -> void:
 	speech.voice_controller.remove_player_audio(player_id)
 	speech_players_streams[player_id].queue_free()
 	if speech_players_streams.erase(player_id) != true:
-		printerr("Player audio stream from " + str(player_id) + "did not exist")
+		printerr("Player audio stream from " + str(player_id) + " did not exist")
 	# TODO Check if that remove the child. Else we might have
 	# to it manually.
 

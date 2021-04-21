@@ -12,3 +12,4 @@ __meta__ = {
 }
 
 [node name="Viewport" parent="." instance=ExtResource( 1 )]
+handle_input_locally = false

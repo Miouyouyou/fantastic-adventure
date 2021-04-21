@@ -78,12 +78,40 @@ func list_get_selected_options(ui_list:ItemList) -> Array:
 	return result
 
 
-func ui_search():
+
+func sketchfab_endpoint_url(endpoint:String) -> String:
+	return sketchfab_api_host + endpoint
+
+
+
+func login_sketchfab(login_details:Dictionary) -> void:
+	var endpoint:String = "/oauth2/token/?grant_type=password&client_id=" + CLIENT_ID
+	DownloadManager.post_form(
+		"Login to Sketchfab",
+		sketchfab_endpoint_url(endpoint), login_details,
+		self, "cb_login_request")
+
+# ... Only available during the testing phase
+# In most cases, caching credentials is a security red flag
+func credentials_ok(credentials:Dictionary) -> bool:
+	return (credentials.has("access_token") and credentials.has("refresh_token"))
+
+func credentials_load_cached(cache_filepath:String) -> bool:
+	var parsed_data = parse_json(FileHelpers.read_text(cache_filepath))
+	var loaded : bool = false
+	if parsed_data is Dictionary:
+		var credentials:Dictionary = parsed_data
+		if credentials_ok(credentials):
+			loaded = true
+			emit_signal("sketchfab_login_success", credentials)
+	return loaded
+
+func _ui_search():
 	var query:Dictionary = {
 		"q": ui_input_search.text,
 		"license": options_get_selected_text(ui_filter_field_licences),
 		"max_face_count": int(ui_filter_field_max_face_count.value),
-		"categories": ["characters-creatures", "food-drink"],
+		"categories": list_get_selected_options(ui_filter_field_categories),
 		"sort_by": options_get_selected_text(ui_filter_field_sort_by),
 		"max_filesizes": ui_max_filesizes_to_query_string(),
 		"downloadable": true }
@@ -93,16 +121,13 @@ func ui_search():
 	print_debug(to_json(query))
 	sketchfab_list_models(query)
 
-func sketchfab_endpoint_url(endpoint:String) -> String:
-	return sketchfab_api_host + endpoint
-
 func sketchfab_list_models(search_criterias:Dictionary):
 	var endpoint_url = sketchfab_endpoint_url("/v3/search?type=models")
 	var query_params = HTTPClient.new().query_string_from_dict(search_criterias)
 	var complete_url = endpoint_url + "&" + query_params
 	print_debug(complete_url)
 	DownloadManager.get_request(
-		"Getting CC-BY models", complete_url, self, "cb_got_models")
+		"Getting models", complete_url, self, "cb_got_models", search_criterias)
 
 func cb_test_login_success(credentials:Dictionary):
 	set_meta("access_token", credentials["access_token"])
@@ -126,12 +151,20 @@ func cb_login_request(result: int, response_code: int, headers: PoolStringArray,
 func http_ok(result:int, response_code:int) -> bool:
 	return (result == OK and response_code == 200)
 
-func cb_got_models(result: int, response_code: int, headers: PoolStringArray, body: PoolByteArray, download_id: int, reason: String, extra_arg):
+func cb_got_models(
+	result: int,
+	response_code: int,
+	headers: PoolStringArray,
+	body: PoolByteArray,
+	download_id: int,
+	reason: String,
+	search_criterias:Dictionary):
+
 	DownloadManager.remove_ref(download_id)
 	if result == OK and response_code == 200:
 		# FIXME Check the results before passing them
 		var json_data = body.get_string_from_utf8()
-		display_model_list(parse_json(json_data))
+		display_model_list(parse_json(json_data), search_criterias)
 	else:
 		# FIXME : The API actually provide accurate information
 		# Relay these info here
@@ -139,35 +172,24 @@ func cb_got_models(result: int, response_code: int, headers: PoolStringArray, bo
 
 func cb_sketchfab_thumbnail_click(args):
 	var sketchfab_model_info : Dictionary = args[0]
+	var search_criterias : Dictionary = args[1]
+	var thumbnail = args[2]
 	print(sketchfab_model_info)
-	set_select_description_sketchfab(sketchfab_model_info)
+	set_select_description_sketchfab(sketchfab_model_info, search_criterias, thumbnail)
 
-func cb_model_downloaded(result: int, response_code: int, headers: PoolStringArray, body: PoolByteArray, download_id: int, reason: String, download_filename:String, extra_arg):
-	if http_ok(result, response_code):
-		var z:ZIPReader = ZIPReader.new()
-		z.open(download_filename)
-		var zipped_files:PoolStringArray = z.get_files()
-		z.close()
-		var out_filename:String = "user://" + extra_arg + ".glb"
-		for zipped_file in zipped_files:
-			if zipped_file.ends_with(".gltf"):
-				var handler:GLTFHelpers.ZipFileHandler = GLTFHelpers.ZipFileHandler.new()
-				handler.open_zip_file(download_filename)
-				if GLTFHelpers.convert_gltf_to_glb(zipped_file, out_filename, handler) != OK:
-					print_debug("Could not convert the archive...")
-					return
-				ui_show_downloaded_model(extra_arg)
+func set_select_description_sketchfab(
+	sketchfab_model_info:Dictionary,
+	search_criterias:Dictionary,
+	thumbnail):
 
-func cb_model_download_url_obtained(result: int, response_code: int, headers: PoolStringArray, body: PoolByteArray, download_id: int, reason: String, extra_arg:String):
-	if http_ok(result, response_code):
-		var info = parse_json(body.get_string_from_utf8())
-		if info is Dictionary:
-			print(info)
-			var model_url:String = info["gltf"]["url"]
-			var model_uid:String = extra_arg
-			DownloadManager.download_to_file("Download model", model_url, "user://" + model_uid + ".zip", self, "cb_model_downloaded", model_uid)
-
-func set_select_description_sketchfab(sketchfab_model_info:Dictionary):
+	# FIXME Part of the code have nothing to do here, and should be moved
+	# out to cb_sketchfab_thumbnail_click
+	print(sketchfab_model_info.keys())
+	# Seriously, WTF sketchfab ? I have to export my search_criterias for THAT
+	# simple reason : Sketchfab do NOT provide the licence of the model, in the
+	# metadata.
+	# I... have no words for this.
+	var license:String = search_criterias["license"]
 	ui_label_model_name.text = sketchfab_model_info["name"]
 	ui_label_model_author.text = sketchfab_model_info["user"]["displayName"]
 	ui_label_model_polycount.text = str(sketchfab_model_info["faceCount"])
@@ -206,33 +228,87 @@ func set_select_description_sketchfab(sketchfab_model_info:Dictionary):
 
 	# Note : Let this here. This handle the case where the file hasn't been
 	# download correclty, and the case where the file has never been downloaded
-	auth_call_get("Download the model", "/v3/models/" + uid + "/download", self, "cb_model_download_url_obtained", uid)
+	auth_call_get(
+		"Download the model",
+		"/v3/models/" + uid + "/download",
+		self, "cb_model_download_url_obtained",
+		{"sketchfab": sketchfab_model_info,
+		"license": license})
+	# Only save the thumbnail on the disk if the user actually requested 
+	# to download the model.
+	# The network might be very slow while the user is very fast, leading to
+	# downloading a model which the thumbnail is still not completely
+	# downloaded. Therefore, async mechanisms are used here.
+	# Also, it's also possible that the user might not be able to download
+	# the thumbnails if the server hosting the thumbnails is broken.
+	# Models and thumbs are generally served through different servers.
+	thumbnail.connect(
+		"save_thumbnail",
+		self, "cb_thumbnail_save", [{"sketchfab": sketchfab_model_info}])
+	thumbnail.save_thumbnail_when_possible()
 
-func login_sketchfab(login_details:Dictionary) -> void:
-	var endpoint:String = "/oauth2/token/?grant_type=password&client_id=" + CLIENT_ID
-	DownloadManager.post_form(
-		"Login to Sketchfab",
-		sketchfab_endpoint_url(endpoint), login_details,
-		self, "cb_login_request")
+func cb_thumbnail_save(
+	image_buffer:PoolByteArray,
+	metadata:Dictionary):
 
-# ... Only available during the testing phase
-# In most cases, caching credentials is a security red flag
-func credentials_ok(credentials:Dictionary) -> bool:
-	return (credentials.has("access_token") and credentials.has("refresh_token"))
+	print_debug("Saving thumbnail")
+	ModelsInventory.cache_model_thumbnail_buffer(
+		"sketchfab", metadata["sketchfab"]["uid"], image_buffer)
 
-func credentials_load_cached(cache_filepath:String) -> bool:
-	var parsed_data = parse_json(FileHelpers.read_text(cache_filepath))
-	var loaded : bool = false
-	if parsed_data is Dictionary:
-		var credentials:Dictionary = parsed_data
-		if credentials_ok(credentials):
-			loaded = true
-			emit_signal("sketchfab_login_success", credentials)
-	return loaded
+func cb_model_download_url_obtained(
+	result: int,
+	response_code: int,
+	headers: PoolStringArray,
+	body: PoolByteArray,
+	download_id: int,
+	reason: String,
+	metadata:Dictionary):
 
-func display_model_list(list:Dictionary):
-	print_debug(list)
-	# print(list["results"][0].keys())
+	if http_ok(result, response_code):
+		var info = parse_json(body.get_string_from_utf8())
+		if info is Dictionary:
+			print(info)
+			var model_url:String = info["gltf"]["url"]
+			DownloadManager.download_to_file(
+				"Download model",
+				model_url, "user://" + metadata["sketchfab"]["uid"] + ".zip",
+				self, "cb_model_downloaded", metadata)
+
+func cb_model_downloaded(
+	result: int,
+	response_code: int,
+	headers: PoolStringArray,
+	body: PoolByteArray,
+	download_id: int,
+	reason: String,
+	download_filename:String,
+	metadata:Dictionary):
+
+	if http_ok(result, response_code):
+		var z:ZIPReader = ZIPReader.new()
+		z.open(download_filename)
+		var zipped_files:PoolStringArray = z.get_files()
+		z.close()
+		var provider_metadata:Dictionary = metadata["sketchfab"]
+		var license:String = metadata["license"]
+		var model_uid:String = provider_metadata["uid"]
+		var out_filename:String = "user://" + model_uid + ".glb"
+		for zipped_file in zipped_files:
+			if zipped_file.ends_with(".gltf"):
+				var handler:GLTFHelpers.ZipFileHandler = GLTFHelpers.ZipFileHandler.new()
+				handler.open_zip_file(download_filename)
+				if GLTFHelpers.convert_gltf_to_glb(zipped_file, out_filename, handler) != OK:
+					print_debug("Could not convert the archive...")
+					return
+
+				if ui_show_downloaded_model(model_uid):
+					ModelsInventory.cache_model(
+						"sketchfab", model_uid, provider_metadata,
+						provider_metadata["name"], out_filename,
+						provider_metadata["uri"], license,
+						ui_model_preview.get_model_aabb())
+
+func display_model_list(list:Dictionary, search_criterias:Dictionary):
 
 	for result in list["results"]:
 		for thumbnail_data in result["thumbnails"]["images"]:
@@ -241,7 +317,7 @@ func display_model_list(list:Dictionary):
 				var thumbnail = thumbnail_object.instance()
 				ui_results_list.add_child(thumbnail)
 				thumbnail.set_thumbnail_with_url(thumbnail_data["url"], result["name"])
-				thumbnail.set_click_handler(self, "cb_sketchfab_thumbnail_click", [result])
+				thumbnail.set_click_handler(self, "cb_sketchfab_thumbnail_click", [result, search_criterias, thumbnail])
 	return
 
 func _ready():
@@ -263,13 +339,6 @@ func _ready():
 			login_sketchfab(parsed_data)
 		else:
 			print("Could not open ", secrets_filepath)
-
-
-func _on_TextSearch_text_entered(new_text):
-	ui_search()
-
-func _on_ButtonSearch_pressed():
-	ui_search()
 
 const FILTER_FIELD_UNKNOWN = 0
 const FILTER_FIELD_LICENCE = 1
@@ -332,27 +401,34 @@ func sketchfab_get_categories() -> void:
 		sketchfab_endpoint_url("/v3/categories"),
 		self, "cb_sketchfab_update_filters", FILTER_FIELD_CATEGORIES)
 
-func _on_ButtonClose_pressed():
-	ui_filters_container.visible = false
-	pass # Replace with function body.
-
-func _on_ButtonFilters_pressed():
-	ui_filters_container.visible = true
-	pass # Replace with function body.
-
 func default_signal_handler_sketchfab_error(part:String, args:Array) -> void:
 	match part:
 		"login":
 			print_debug("Something wrong happened during the login phase")
 			print_debug("Error : " + str(args[0]))
 		"models_list":
-			print_debug("Something wrong happened when trying to list models")
+			print_debug("Could not list the models due to the following error :")
 			print_debug("Error : " + str(args[0]))
 		_:
 			print_debug("Unknown error during unknown phase : " + part)
 	return
 
+func _ui_show_filters(show:bool) -> void:
+	ui_filters_container.visible = show
+
+func _on_ButtonClose_pressed():
+	_ui_show_filters(false)
+
+func _on_ButtonFilters_pressed():
+	_ui_show_filters(true)
+
+func _on_TextSearch_text_entered(new_text):
+	_ui_search()
+	_ui_show_filters(false)
+
+func _on_ButtonSearch_pressed():
+	_ui_search()
+	_ui_show_filters(false)
 
 func _on_SearchResults_resized():
 	print_debug("RESIZED !!")
-	pass # Replace with function body.

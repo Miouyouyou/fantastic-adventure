@@ -1,4 +1,4 @@
-extends ItemList
+extends GridContainer
 
 func _ready():
 	var p = preload("res://UI/ModelThumbnail.tscn")

@@ -1,13 +1,28 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Components/FlexibleGridContainer.tscn" type="PackedScene" id=1]
+[ext_resource path="res://UI/Inventory.gd" type="Script" id=2]
+[ext_resource path="res://SimpleUITheme.tres" type="Theme" id=3]
 
 [node name="Control" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+theme = ExtResource( 3 )
+script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+path_picture = NodePath("HSplitContainer/ScrollContainer2/SelectedItem/Picture")
+path_userscale = NodePath("HSplitContainer/ScrollContainer2/SelectedItem/UserScale/LineEdit")
+path_scaled_width = NodePath("HSplitContainer/ScrollContainer2/SelectedItem/ScaleSizes/Width")
+path_scaled_height = NodePath("HSplitContainer/ScrollContainer2/SelectedItem/ScaleSizes/Height")
+path_scaled_depth = NodePath("HSplitContainer/ScrollContainer2/SelectedItem/ScaleSizes/Depth")
+path_original_width = NodePath("HSplitContainer/ScrollContainer2/SelectedItem/OriginalSizes/Width")
+path_original_height = NodePath("HSplitContainer/ScrollContainer2/SelectedItem/OriginalSizes/Height")
+path_original_depth = NodePath("HSplitContainer/ScrollContainer2/SelectedItem/OriginalSizes/Depth")
+path_provider = NodePath("HSplitContainer/ScrollContainer2/SelectedItem/Source/Provider")
+path_license = NodePath("HSplitContainer/ScrollContainer2/SelectedItem/License")
+path_description = NodePath("HSplitContainer/ScrollContainer2/SelectedItem/Description")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="."]
 anchor_right = 1.0
@@ -19,9 +34,189 @@ __meta__ = {
 }
 
 [node name="ScrollContainer" type="ScrollContainer" parent="HSplitContainer"]
-margin_right = 1024.0
+margin_right = 725.0
 margin_bottom = 600.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="GridContainer" parent="HSplitContainer/ScrollContainer" instance=ExtResource( 1 )]
+margin_right = 725.0
+
+[node name="ScrollContainer2" type="ScrollContainer" parent="HSplitContainer"]
+margin_left = 737.0
+margin_right = 1024.0
+margin_bottom = 600.0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.4
+
+[node name="SelectedItem" type="VBoxContainer" parent="HSplitContainer/ScrollContainer2"]
+margin_right = 287.0
+margin_bottom = 499.0
+size_flags_horizontal = 3
+
+[node name="Picture" type="TextureRect" parent="HSplitContainer/ScrollContainer2/SelectedItem"]
+margin_right = 287.0
+margin_bottom = 144.0
+rect_min_size = Vector2( 256, 144 )
+
+[node name="UserScale" type="HBoxContainer" parent="HSplitContainer/ScrollContainer2/SelectedItem"]
+margin_top = 148.0
+margin_right = 287.0
+margin_bottom = 177.0
+
+[node name="Label" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem/UserScale"]
+margin_top = 5.0
+margin_right = 40.0
+margin_bottom = 24.0
+text = "Scale"
+
+[node name="LineEdit" type="SpinBox" parent="HSplitContainer/ScrollContainer2/SelectedItem/UserScale"]
+margin_left = 44.0
+margin_right = 287.0
+margin_bottom = 29.0
+size_flags_horizontal = 3
+min_value = 0.1
+max_value = 1000.0
+step = 0.01
+value = 0.1
+allow_greater = true
+suffix = "%"
+
+[node name="LabelSizesCategory" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem"]
+margin_top = 181.0
+margin_right = 287.0
+margin_bottom = 200.0
+text = "Sizes in meters"
+
+[node name="LabelScaledSize" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem"]
+margin_top = 204.0
+margin_right = 287.0
+margin_bottom = 223.0
+text = "Scaled :"
+
+[node name="ScaleSizes" type="GridContainer" parent="HSplitContainer/ScrollContainer2/SelectedItem"]
+margin_top = 227.0
+margin_right = 287.0
+margin_bottom = 292.0
+columns = 2
+
+[node name="WidthLabel" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem/ScaleSizes"]
+margin_right = 20.0
+margin_bottom = 19.0
+text = "X :"
+
+[node name="Width" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem/ScaleSizes"]
+margin_left = 24.0
+margin_right = 24.0
+margin_bottom = 19.0
+
+[node name="HeightLabel" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem/ScaleSizes"]
+margin_top = 23.0
+margin_right = 20.0
+margin_bottom = 42.0
+text = "Y :"
+
+[node name="Height" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem/ScaleSizes"]
+margin_left = 24.0
+margin_top = 23.0
+margin_right = 24.0
+margin_bottom = 42.0
+
+[node name="DepthLabel" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem/ScaleSizes"]
+margin_top = 46.0
+margin_right = 20.0
+margin_bottom = 65.0
+text = "Z :"
+
+[node name="Depth" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem/ScaleSizes"]
+margin_left = 24.0
+margin_top = 46.0
+margin_right = 24.0
+margin_bottom = 65.0
+
+[node name="OriginalSizesLabel" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem"]
+margin_top = 296.0
+margin_right = 287.0
+margin_bottom = 315.0
+text = "Original :"
+
+[node name="OriginalSizes" type="GridContainer" parent="HSplitContainer/ScrollContainer2/SelectedItem"]
+margin_top = 319.0
+margin_right = 287.0
+margin_bottom = 384.0
+columns = 2
+
+[node name="WidthLabel" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem/OriginalSizes"]
+margin_right = 20.0
+margin_bottom = 19.0
+text = "X :"
+
+[node name="Width" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem/OriginalSizes"]
+margin_left = 24.0
+margin_right = 24.0
+margin_bottom = 19.0
+
+[node name="HeightLabel" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem/OriginalSizes"]
+margin_top = 23.0
+margin_right = 20.0
+margin_bottom = 42.0
+text = "Y :"
+
+[node name="Height" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem/OriginalSizes"]
+margin_left = 24.0
+margin_top = 23.0
+margin_right = 24.0
+margin_bottom = 42.0
+
+[node name="DepthLabel" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem/OriginalSizes"]
+margin_top = 46.0
+margin_right = 20.0
+margin_bottom = 65.0
+text = "Z :"
+
+[node name="Depth" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem/OriginalSizes"]
+margin_left = 24.0
+margin_top = 46.0
+margin_right = 24.0
+margin_bottom = 65.0
+
+[node name="Source" type="HBoxContainer" parent="HSplitContainer/ScrollContainer2/SelectedItem"]
+margin_top = 388.0
+margin_right = 287.0
+margin_bottom = 407.0
+
+[node name="Label" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem/Source"]
+margin_right = 62.0
+margin_bottom = 19.0
+text = "Source :"
+
+[node name="Provider" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem/Source"]
+margin_left = 66.0
+margin_right = 152.0
+margin_bottom = 19.0
+text = "Unknown ?"
+
+[node name="LicenseLabel" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem"]
+margin_top = 411.0
+margin_right = 287.0
+margin_bottom = 430.0
+text = "License :"
+
+[node name="License" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem"]
+margin_top = 434.0
+margin_right = 287.0
+margin_bottom = 453.0
+text = "Unknown licence"
+
+[node name="DescriptionLabel" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem"]
+margin_top = 457.0
+margin_right = 287.0
+margin_bottom = 476.0
+text = "Description"
+
+[node name="Description" type="Label" parent="HSplitContainer/ScrollContainer2/SelectedItem"]
+margin_top = 480.0
+margin_right = 287.0
+margin_bottom = 499.0
+
+[connection signal="value_changed" from="HSplitContainer/ScrollContainer2/SelectedItem/UserScale/LineEdit" to="." method="_on_LineEdit_value_changed"]

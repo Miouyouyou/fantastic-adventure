@@ -4,21 +4,14 @@
 
 [sub_resource type="ImageTexture" id=1]
 
-[node name="GridContainer" type="ItemList"]
+[node name="GridContainer" type="GridContainer"]
 margin_right = 1024.0
 margin_bottom = 600.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-auto_height = true
-max_columns = 0
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="TextureRect" type="TextureRect" parent="."]
-margin_right = 918.0
-margin_bottom = 511.0
 texture = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false

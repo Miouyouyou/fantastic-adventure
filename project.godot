@@ -44,6 +44,8 @@ DownloadManager="*res://Network/DownloadManager.gd"
 FileHelpers="*res://helpers/file_helpers.gd"
 GLTFHelpers="*res://helpers/gltf_helpers.gd"
 ImageHelpers="*res://helpers/image_helpers.gd"
+ModelsInventory="*res://main/models_inventory.gd"
+NodeHelpers="*res://helpers/node_helpers.gd"
 
 [editor_plugins]
 

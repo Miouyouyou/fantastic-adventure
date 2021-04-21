@@ -291,4 +291,3 @@ static func convert_gltf_to_glb(gltf_filepath:String, glb_out_filepath:String, i
 
 func instantiate(model_filepath:String) -> Node:
 	return PackedSceneGLTF.new().import_gltf_scene(model_filepath)
-	

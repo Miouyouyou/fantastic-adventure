@@ -65,6 +65,8 @@ additional_rotation = Vector3( 270, 0, 0 )
 material_override = SubResource( 1 )
 radius = 0.1
 
+[node name="Items" type="Spatial" parent="ManetteGauche"]
+
 [node name="ManetteDroite" type="ARVRController" parent="."]
 controller_id = 2
 
@@ -82,6 +84,8 @@ additional_rotation = Vector3( 270, 0, 0 )
 [node name="CSGSphere2" type="CSGSphere" parent="ManetteDroite/IK_LookAt_RightArm"]
 material_override = SubResource( 2 )
 radius = 0.1
+
+[node name="Items" type="Spatial" parent="ManetteDroite"]
 
 [node name="ARVRCamera" type="ARVRCamera" parent="."]
 
